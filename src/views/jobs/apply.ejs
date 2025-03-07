@@ -1,0 +1,161 @@
+<div class="application-container">
+    <div class="application-header">
+      <button onclick="history.back()" class="close-button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="application-content">
+      <h1 class="application-title">Apply for <%= job.title %></h1>
+      <p class="application-subtitle">Please fill out the form below to apply for this position.</p>
+      
+      <form action="/jobs/<%= job.id %>/apply" method="POST" class="application-form">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" required>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="street" class="form-label">Street Address</label>
+          <input type="text" class="form-control" id="street" name="street" required>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" name="city" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="postalCode" class="form-label">Postal Code</label>
+            <input type="text" class="form-control" id="postalCode" name="postalCode" required>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="alternatePhone" class="form-label">Alternate Phone Number</label>
+            <input type="tel" class="form-control" id="alternatePhone" name="alternatePhone">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Have you previously worked with us?</label>
+          <select class="form-select" name="previouslyWorked" id="previouslyWorked">
+            <option value="no" selected>No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        
+        <div id="previousWorkDates" class="row mb-3" style="display: none;">
+          <div class="col-md-4">
+            <label for="month" class="form-label">Month</label>
+            <input type="text" class="form-control" id="month" name="month" placeholder="MM">
+          </div>
+          <div class="col-md-4">
+            <label for="day" class="form-label">Day</label>
+            <input type="text" class="form-control" id="day" name="day" placeholder="DD">
+          </div>
+          <div class="col-md-4">
+            <label for="year" class="form-label">Year</label>
+            <input type="text" class="form-control" id="year" name="year" placeholder="YYYY">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Upload your CV</label>
+          <div class="cv-upload-area" id="dropZone">
+            <p class="text-center">Drag and drop your CV here</p>
+            <p class="text-center text-muted">or</p>
+            <div class="text-center">
+              <label for="cvFile" class="browse-files">Browse files</label>
+              <input type="file" id="cvFile" name="cvFile" class="hidden-file-input" accept=".pdf,.doc,.docx">
+            </div>
+          </div>
+          <div id="selectedFile" class="selected-file-info"></div>
+        </div>
+        
+        <button type="submit" class="btn btn-success w-100">Submit Application</button>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+  document.getElementById('previouslyWorked').addEventListener('change', function() {
+    const dateFields = document.getElementById('previousWorkDates');
+    if (this.value === 'yes') {
+      dateFields.style.display = 'flex';
+    } else {
+      dateFields.style.display = 'none';
+    }
+  });
+  
+  // File upload handling
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('cvFile');
+  const selectedFile = document.getElementById('selectedFile');
+  
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+  });
+  
+  function highlight() {
+    dropZone.classList.add('highlight');
+  }
+  
+  function unhighlight() {
+    dropZone.classList.remove('highlight');
+  }
+  
+  dropZone.addEventListener('drop', handleDrop, false);
+  
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    if (files.length) {
+      fileInput.files = files;
+      updateFileInfo(files[0]);
+    }
+  }
+  
+  fileInput.addEventListener('change', function() {
+    if (this.files.length) {
+      updateFileInfo(this.files[0]);
+    }
+  });
+  
+  function updateFileInfo(file) {
+    selectedFile.textContent = file.name;
+    selectedFile.style.display = 'block';
+  }
+  </script>
+  
+  

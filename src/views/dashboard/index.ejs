@@ -1,0 +1,101 @@
+<section class="dashboard-section">
+  <h2 class="section-title">Current Openings</h2>
+  
+  <div class="job-cards">
+    <% jobs.forEach(function(job) { %>
+      <a href="/jobs/<%= job.id %>" class="job-card">
+        <div class="job-card-header">
+          <div class="job-icon-title">
+            <span class="job-icon"><%= job.icon %></span>
+            <div>
+              <h3 class="job-title"><%= job.title %></h3>
+              <p class="job-location"><%= job.location %></p>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="icon-button transparent" onclick="event.preventDefault(); editJob('<%= job.id %>')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="icon-button transparent">
+              <i class="fas fa-arrow-up-right"></i>
+            </button>
+          </div>
+        </div>
+        <div class="job-experience"><%= job.experience %></div>
+        <div class="job-metrics">
+          <div>
+            <div class="job-applications"><%= job.applications %> applicants</div>
+            <div class="job-trend <%= job.trendUp ? 'trend-up' : 'trend-down' %>"><%= job.trend %></div>
+          </div>
+          <div class="job-color-box <%= job.color.replace('from-', '').replace('to-', '') %>"></div>
+        </div>
+      </a>
+    <% }); %>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <h2 class="section-title">Applicants</h2>
+    <select class="form-select month-select">
+      <option><%= month %></option>
+    </select>
+  </div>
+  
+  <div class="filter-tabs">
+    <button class="filter-tab <%= filter === 'All' ? 'active' : '' %>">All</button>
+    <button class="filter-tab <%= filter === 'New' ? 'active' : '' %>">New</button>
+    <button class="filter-tab <%= filter === 'Screening' ? 'active' : '' %>">Screening</button>
+    <button class="filter-tab <%= filter === 'Interview' ? 'active' : '' %>">Interview</button>
+    <button class="filter-tab <%= filter === 'Offer' ? 'active' : '' %>">Offer</button>
+    <button class="filter-tab <%= filter === 'Hired' ? 'active' : '' %>">Hired</button>
+  </div>
+  
+  <div class="candidates-table">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>APPLICANT NAME</th>
+          <th>APPLIED ROLE</th>
+          <th>APPLICATION DATE</th>
+          <th>STAGE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% applicants.forEach(function(applicant) { %>
+          <tr class="candidate-row" data-id="<%= applicant.id %>">
+            <td>
+              <div class="candidate-name">
+                <div class="avatar">
+                  <img src="<%= applicant.avatar %>" alt="<%= applicant.name %>">
+                </div>
+                <span><%= applicant.name %></span>
+              </div>
+            </td>
+            <td><%= applicant.appliedRole %></td>
+            <td><%= applicant.applicationDate %></td>
+            <td><%= applicant.stage %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Modal for candidate profile will be added via JavaScript -->
+
+<script>
+function editJob(jobId) {
+  // Implementation for editing job
+  window.location.href = `/jobs/${jobId}/edit`;
+}
+
+document.querySelectorAll('.candidate-row').forEach(row => {
+  row.addEventListener('click', () => {
+    const candidateId = row.getAttribute('data-id');
+    // Open candidate profile modal or redirect to candidate detail page
+    window.location.href = `/candidates/${candidateId}`;
+  });
+});
+</script>
+

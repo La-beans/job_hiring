@@ -1,0 +1,21 @@
+<div class="login-container">
+    <h1 class="login-title">ENTER YOUR STAFF DETAILS</h1>
+    
+    <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    
+    <form action="/auth/staff-login" method="POST" class="login-form">
+      <div class="form-group">
+        <input type="email" name="email" class="form-control login-input" placeholder="Email" required>
+      </div>
+      
+      <div class="form-group">
+        <input type="password" name="password" class="form-control login-input" placeholder="Password" required>
+      </div>
+      
+      <button type="submit" class="btn btn-dark login-button">Login</button>
+    </form>
+  </div>
+  
+  
