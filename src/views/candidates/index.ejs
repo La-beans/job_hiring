@@ -1,0 +1,53 @@
+<div class="candidates-container">
+    <div class="section-header">
+      <h1 class="page-title">Candidates</h1>
+      <select class="form-select month-select">
+        <option><%= month %></option>
+      </select>
+    </div>
+  
+    <div class="filter-tabs">
+      <a href="/candidates" class="filter-tab <%= filter === 'All' ? 'active' : '' %>">All</a>
+      <a href="/candidates?filter=New" class="filter-tab <%= filter === 'New' ? 'active' : '' %>">New</a>
+      <a href="/candidates?filter=Screening" class="filter-tab <%= filter === 'Screening' ? 'active' : '' %>">Screening</a>
+      <a href="/candidates?filter=Interview" class="filter-tab <%= filter === 'Interview' ? 'active' : '' %>">Interview</a>
+      <a href="/candidates?filter=Offer" class="filter-tab <%= filter === 'Offer' ? 'active' : '' %>">Offer</a>
+      <a href="/candidates?filter=Hired" class="filter-tab <%= filter === 'Hired' ? 'active' : '' %>">Hired</a>
+    </div>
+  
+    <div class="candidates-table">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>APPLICANT NAME</th>
+            <th>APPLIED ROLE</th>
+            <th>APPLICATION DATE</th>
+            <th>STAGE</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% applicants.forEach(function(applicant) { %>
+            <tr class="candidate-row">
+              <td>
+                <div class="candidate-name">
+                  <div class="avatar">
+                    <img src="<%= applicant.avatar %>" alt="<%= applicant.name %>">
+                  </div>
+                  <span><%= applicant.name %></span>
+                </div>
+              </td>
+              <td><%= applicant.appliedRole %></td>
+              <td><%= applicant.applicationDate %></td>
+              <td><%= applicant.stage %></td>
+              <td>
+                <a href="/candidates/<%= applicant.id %>" class="btn btn-sm btn-outline-primary">View</a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  

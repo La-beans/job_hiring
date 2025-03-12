@@ -1,0 +1,51 @@
+<section class="dashboard-section">
+    <h2 class="section-title">Available Job Openings</h2>
+  
+    <div class="job-cards">
+      <% jobs.forEach(function(job) { %>
+        <a href="/jobs/<%= job.id %>" class="job-card">
+          <div class="job-card-header">
+            <div class="job-icon-title">
+              <span class="job-icon"><%= job.icon %></span>
+              <div>
+                <h3 class="job-title"><%= job.title %></h3>
+                <p class="job-location"><%= job.location %></p>
+              </div>
+            </div>
+          </div>
+          <div class="job-experience"><%= job.experience %></div>
+          <div class="job-posted">Posted <%= job.postedDays %> days ago</div>
+        </a>
+      <% }); %>
+    </div>
+  </section>
+  
+  <% if (applications && applications.length > 0) { %>
+  <section class="dashboard-section">
+    <h2 class="section-title">My Recent Applications</h2>
+  
+    <div class="applications-list">
+      <% applications.forEach(function(application) { %>
+        <div class="application-card">
+          <div class="application-header">
+            <div class="application-icon-title">
+              <span class="job-icon"><%= application.job_icon %></span>
+              <div>
+                <h3 class="job-title"><%= application.job_title %></h3>
+                <p class="job-location"><%= application.job_location %></p>
+              </div>
+            </div>
+            <div class="application-status <%= application.stage.toLowerCase().replace(' ', '-') %>">
+              <%= application.stage %>
+            </div>
+          </div>
+          <div class="application-date">
+            Applied on <%= new Date(application.created_at).toLocaleDateString() %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+  <% } %>
+  
+  

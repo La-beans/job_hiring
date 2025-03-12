@@ -1,0 +1,132 @@
+<div class="job-edit-container">
+    <div class="job-edit-header">
+      <button onclick="history.back()" class="btn btn-link back-button">
+        <i class="fas fa-arrow-left"></i> Back to Jobs
+      </button>
+      <h1 class="page-title">Edit Job</h1>
+    </div>
+    
+    <div class="job-edit-content">
+      <form id="editJobForm" action="/jobs/<%= job.id %>" method="POST">
+        <div class="mb-3">
+          <label class="form-label">Job Title</label>
+          <input type="text" class="form-control" name="title" value="<%= job.title %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Role Description</label>
+          <textarea class="form-control" name="description" rows="4" required><%= job.description %></textarea>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col">
+            <label class="form-label">Job Location</label>
+            <select class="form-select" name="location" required>
+              <option value="Remote" <%= job.location === 'Remote' ? 'selected' : '' %>>Remote</option>
+              <option value="Bengaluru" <%= job.location === 'Bengaluru' ? 'selected' : '' %>>Bengaluru</option>
+              <option value="Mumbai" <%= job.location === 'Mumbai' ? 'selected' : '' %>>Mumbai</option>
+              <option value="Delhi" <%= job.location === 'Delhi' ? 'selected' : '' %>>Delhi</option>
+              <option value="Hyderabad" <%= job.location === 'Hyderabad' ? 'selected' : '' %>>Hyderabad</option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label">Work Experience</label>
+            <select class="form-select" name="experience" required>
+              <option value="1 year" <%= job.experience === '1 year' ? 'selected' : '' %>>1 year</option>
+              <option value="2 years" <%= job.experience === '2 years' ? 'selected' : '' %>>2 years</option>
+              <option value="3 years exp." <%= job.experience === '3 years exp.' ? 'selected' : '' %>>3 years</option>
+              <option value="4 years" <%= job.experience === '4 years' ? 'selected' : '' %>>4 years</option>
+              <option value="5+ years exp." <%= job.experience === '5+ years exp.' ? 'selected' : '' %>>5+ years</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col">
+            <label class="form-label">Start Date</label>
+            <input type="date" class="form-control" name="startDate" value="<%= job.start_date %>" required>
+          </div>
+          <div class="col">
+            <label class="form-label">End Date</label>
+            <input type="date" class="form-control" name="endDate" value="<%= job.end_date %>" required>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Select Emoji</label>
+          <div class="emoji-selector">
+            <button type="button" class="emoji-option <%= job.icon === '🎨' ? 'active' : '' %>" data-emoji="🎨">🎨</button>
+            <button type="button" class="emoji-option <%= job.icon === '🚀' ? 'active' : '' %>" data-emoji="🚀">🚀</button>
+            <button type="button" class="emoji-option <%= job.icon === '💰' ? 'active' : '' %>" data-emoji="💰">💰</button>
+            <button type="button" class="emoji-option <%= job.icon === '🔒' ? 'active' : '' %>" data-emoji="🔒">🔒</button>
+            <button type="button" class="emoji-option <%= job.icon === '💻' ? 'active' : '' %>" data-emoji="💻">💻</button>
+            <button type="button" class="emoji-option <%= job.icon === '📊' ? 'active' : '' %>" data-emoji="📊">📊</button>
+            <button type="button" class="emoji-option <%= job.icon === '🎯' ? 'active' : '' %>" data-emoji="🎯">🎯</button>
+            <button type="button" class="emoji-option <%= job.icon === '🤝' ? 'active' : '' %>" data-emoji="🤝">🤝</button>
+          </div>
+          <input type="hidden" name="icon" id="selectedEmoji" value="<%= job.icon %>">
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Color Scheme</label>
+          <div class="color-schemes">
+            <div class="color-option">
+              <input type="radio" name="colorScheme" id="colorBlue" value="blue" <%= job.color_scheme === 'blue' ? 'checked' : '' %>>
+              <label for="colorBlue">
+                <span class="color-preview blue"></span>
+                Blue
+              </label>
+            </div>
+            <div class="color-option">
+              <input type="radio" name="colorScheme" id="colorRed" value="red" <%= job.color_scheme === 'red' ? 'checked' : '' %>>
+              <label for="colorRed">
+                <span class="color-preview red"></span>
+                Red
+              </label>
+            </div>
+            <div class="color-option">
+              <input type="radio" name="colorScheme" id="colorYellow" value="yellow" <%= job.color_scheme === 'yellow' ? 'checked' : '' %>>
+              <label for="colorYellow">
+                <span class="color-preview yellow"></span>
+                Yellow
+              </label>
+            </div>
+            <div class="color-option">
+              <input type="radio" name="colorScheme" id="colorGreen" value="green" <%= job.color_scheme === 'green' ? 'checked' : '' %>>
+              <label for="colorGreen">
+                <span class="color-preview green"></span>
+                Green
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= job.id %>')">Delete Job</button>
+          <button type="submit" class="btn btn-primary">Update Job</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Emoji selector functionality
+    document.querySelectorAll('.emoji-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const emoji = option.getAttribute('data-emoji');
+        document.getElementById('selectedEmoji').value = emoji;
+        
+        // Update active state
+        document.querySelectorAll('.emoji-option').forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+      });
+    });
+    
+    function confirmDelete(jobId) {
+      if (confirm('Are you sure you want to delete this job?')) {
+        window.location.href = `/jobs/${jobId}/delete`;
+      }
+    }
+  </script>
+  
+  

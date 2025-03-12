@@ -5,7 +5,7 @@
       <input type="text" class="search-input" placeholder="Search for jobs, candidates and more...">
     </div>
   </div>
-  
+
   <div class="job-grid">
     <% jobs.forEach(function(job) { %>
       <div class="job-card">
@@ -40,7 +40,7 @@
       </div>
     <% }); %>
   </div>
-  
+
   <button class="floating-action-btn" onclick="openCreateJobModal()">
     <i class="fas fa-plus"></i>
   </button>
@@ -49,38 +49,41 @@
 <!-- Create Job Modal -->
 <div class="modal fade" id="createJobModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header border-secondary">
         <h5 class="modal-title">Create New Job</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p class="text-muted">Fill out the details below to create a new job posting.</p>
         <form id="createJobForm" action="/jobs" method="POST">
           <div class="mb-3">
-            <input type="text" class="form-control" name="title" placeholder="Job Title" required>
+            <input type="text" class="form-control bg-dark text-light border-secondary" name="title" placeholder="Job Title" required>
           </div>
           
           <div class="mb-3">
-            <textarea class="form-control" name="description" rows="4" placeholder="Role Description" required></textarea>
+            <textarea class="form-control bg-dark text-light border-secondary" name="description" rows="4" placeholder="Role Description" required></textarea>
           </div>
           
           <div class="row mb-3">
             <div class="col">
-              <select class="form-select" name="location" required>
+              <select class="form-select bg-dark text-light border-secondary" name="location" required>
                 <option value="" disabled selected>Job Location</option>
-                <option value="remote">Remote</option>
-                <option value="onsite">Local</option>
+                <option value="Remote">Remote</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Hyderabad">Hyderabad</option>
               </select>
             </div>
             <div class="col">
-              <select class="form-select" name="experience" required>
+              <select class="form-select bg-dark text-light border-secondary" name="experience" required>
                 <option value="" disabled selected>Work Experience</option>
                 <option value="1 year">1 year</option>
                 <option value="2 years">2 years</option>
-                <option value="3 years">3 years</option>
+                <option value="3 years exp.">3 years</option>
                 <option value="4 years">4 years</option>
-                <option value="5+ years">5+ years</option>
+                <option value="5+ years exp.">5+ years</option>
               </select>
             </div>
           </div>
@@ -88,11 +91,11 @@
           <div class="row mb-3">
             <div class="col">
               <label class="form-label">Start Date</label>
-              <input type="date" class="form-control" name="startDate" required>
+              <input type="date" class="form-control bg-dark text-light border-secondary" name="startDate" required>
             </div>
             <div class="col">
               <label class="form-label">End Date</label>
-              <input type="date" class="form-control" name="endDate" required>
+              <input type="date" class="form-control bg-dark text-light border-secondary" name="endDate" required>
             </div>
           </div>
           
@@ -116,28 +119,28 @@
             <div class="color-schemes">
               <div class="color-option">
                 <input type="radio" name="colorScheme" id="colorBlue" value="blue" checked>
-                <label for="colorBlue">
+                <label for="colorBlue" class="text-light">
                   <span class="color-preview blue"></span>
                   Blue
                 </label>
               </div>
               <div class="color-option">
                 <input type="radio" name="colorScheme" id="colorRed" value="red">
-                <label for="colorRed">
+                <label for="colorRed" class="text-light">
                   <span class="color-preview red"></span>
                   Red
                 </label>
               </div>
               <div class="color-option">
                 <input type="radio" name="colorScheme" id="colorYellow" value="yellow">
-                <label for="colorYellow">
+                <label for="colorYellow" class="text-light">
                   <span class="color-preview yellow"></span>
                   Yellow
                 </label>
               </div>
               <div class="color-option">
                 <input type="radio" name="colorScheme" id="colorGreen" value="green">
-                <label for="colorGreen">
+                <label for="colorGreen" class="text-light">
                   <span class="color-preview green"></span>
                   Green
                 </label>
@@ -158,7 +161,6 @@ function viewJob(jobId) {
 }
 
 function editJob(jobId) {
-  // Open job edit modal or redirect to edit page
   window.location.href = `/jobs/${jobId}/edit`;
 }
 

@@ -1,0 +1,98 @@
+<div class="candidate-details-container">
+    <div class="candidate-details-header">
+      <button onclick="history.back()" class="btn btn-link back-button">
+        <i class="fas fa-arrow-left"></i> Back to Candidates
+      </button>
+    </div>
+  
+    <div class="candidate-profile">
+      <div class="candidate-header">
+        <div class="avatar large">
+          <img src="<%= candidate.avatar %>" alt="<%= candidate.name %>">
+        </div>
+        <div class="candidate-info">
+          <h1 class="candidate-name"><%= candidate.name %></h1>
+          <p class="candidate-role">Applied for: <%= candidate.job_title %></p>
+          <p class="candidate-date">Applied on: <%= new Date(candidate.created_at).toLocaleDateString() %></p>
+        </div>
+        <div class="candidate-stage">
+          <span class="stage-label">Current Stage:</span>
+          <form action="/candidates/<%= candidate.id %>/stage" method="POST" class="stage-form">
+            <select name="stage" class="form-select stage-select" onchange="this.form.submit()">
+              <option value="New" <%= candidate.stage === 'New' ? 'selected' : '' %>>New</option>
+              <option value="Screening" <%= candidate.stage === 'Screening' ? 'selected' : '' %>>Screening</option>
+              <option value="Interview" <%= candidate.stage === 'Interview' ? 'selected' : '' %>>Interview</option>
+              <option value="Design Challenge" <%= candidate.stage === 'Design Challenge' ? 'selected' : '' %>>Design Challenge</option>
+              <option value="Offer" <%= candidate.stage === 'Offer' ? 'selected' : '' %>>Offer</option>
+              <option value="Hired" <%= candidate.stage === 'Hired' ? 'selected' : '' %>>Hired</option>
+              <option value="Rejected" <%= candidate.stage === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+            </select>
+          </form>
+        </div>
+      </div>
+  
+      <div class="candidate-details">
+        <div class="detail-section">
+          <h2>Contact Information</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Email:</span>
+              <span class="detail-value"><a href="mailto:<%= candidate.email %>"><%= candidate.email %></a></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Phone:</span>
+              <span class="detail-value"><a href="tel:<%= candidate.phone %>"><%= candidate.phone %></a></span>
+            </div>
+            <% if (candidate.alternate_phone) { %>
+              <div class="detail-item">
+                <span class="detail-label">Alternate Phone:</span>
+                <span class="detail-value"><a href="tel:<%= candidate.alternate_phone %>"><%= candidate.alternate_phone %></a></span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+  
+        <div class="detail-section">
+          <h2>Address</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Street:</span>
+              <span class="detail-value"><%= candidate.street %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">City:</span>
+              <span class="detail-value"><%= candidate.city %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Postal Code:</span>
+              <span class="detail-value"><%= candidate.postal_code %></span>
+            </div>
+          </div>
+        </div>
+  
+        <div class="detail-section">
+          <h2>Job Details</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Applied Role:</span>
+              <span class="detail-value"><%= candidate.job_title %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value"><%= candidate.job_location %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Experience Required:</span>
+              <span class="detail-value"><%= candidate.job_experience %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Previously Worked:</span>
+              <span class="detail-value"><%= candidate.previously_worked ? 'Yes' : 'No' %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  

@@ -1,0 +1,13 @@
+<div class="error-container">
+    <h1><%= title %></h1>
+    <p><%= message %></p>
+    <% if (error && Object.keys(error).length > 0) { %>
+      <div class="error-details">
+        <pre><%= JSON.stringify(error, null, 2) %></pre>
+      </div>
+    <% } %>
+    <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
+    <a href="/" class="btn btn-secondary">Go Home</a>
+  </div>
+  
+  

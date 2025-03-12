@@ -1,6 +1,6 @@
 <section class="dashboard-section">
   <h2 class="section-title">Current Openings</h2>
-  
+
   <div class="job-cards">
     <% jobs.forEach(function(job) { %>
       <a href="/jobs/<%= job.id %>" class="job-card">
@@ -41,7 +41,7 @@
       <option><%= month %></option>
     </select>
   </div>
-  
+
   <div class="filter-tabs">
     <button class="filter-tab <%= filter === 'All' ? 'active' : '' %>">All</button>
     <button class="filter-tab <%= filter === 'New' ? 'active' : '' %>">New</button>
@@ -50,7 +50,7 @@
     <button class="filter-tab <%= filter === 'Offer' ? 'active' : '' %>">Offer</button>
     <button class="filter-tab <%= filter === 'Hired' ? 'active' : '' %>">Hired</button>
   </div>
-  
+
   <div class="candidates-table">
     <table class="table">
       <thead>
@@ -82,19 +82,22 @@
   </div>
 </section>
 
-<!-- Modal for candidate profile will be added via JavaScript -->
-
 <script>
 function editJob(jobId) {
-  // Implementation for editing job
   window.location.href = `/jobs/${jobId}/edit`;
 }
 
 document.querySelectorAll('.candidate-row').forEach(row => {
   row.addEventListener('click', () => {
     const candidateId = row.getAttribute('data-id');
-    // Open candidate profile modal or redirect to candidate detail page
     window.location.href = `/candidates/${candidateId}`;
+  });
+});
+
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const filter = tab.textContent;
+    window.location.href = `/candidates?filter=${filter}`;
   });
 });
 </script>

@@ -1,0 +1,41 @@
+<div class="profile-container">
+    <h1 class="page-title">My Profile</h1>
+  
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="/images/avatar.png" alt="<%= user.name %>">
+        </div>
+        <div class="profile-info">
+          <h2><%= user.name %></h2>
+          <p><%= user.email %></p>
+        </div>
+      </div>
+  
+      <form action="/applicant/profile" method="POST" class="profile-form">
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" value="<%= user.name %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" value="<%= user.email %>" required>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="form-control" value="<%= user.date_of_birth ? new Date(user.date_of_birth).toISOString().split('T')[0] : '' %>" disabled>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Account Created</label>
+          <input type="text" class="form-control" value="<%= new Date(user.created_at).toLocaleDateString() %>" disabled>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+      </form>
+    </div>
+  </div>
+  
+  

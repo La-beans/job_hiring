@@ -19,11 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // Settings button functionality
-  const settingsButtons = document.querySelectorAll(".header-right .icon-button:first-child")
-  if (settingsButtons.length > 0) {
-    settingsButtons[0].addEventListener("click", () => {
-      // Bootstrap modal would be shown here
-      // For demo purposes, toggle dark mode directly
+  const toggleDarkMode = document.getElementById("toggleDarkMode")
+  if (toggleDarkMode) {
+    toggleDarkMode.addEventListener("click", () => {
       document.body.classList.toggle("dark-theme")
     })
   }

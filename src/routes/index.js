@@ -3,9 +3,9 @@ const router = express.Router()
 
 // Landing page with role selection
 router.get("/", (req, res) => {
-  if (req.session.user) {
+  if (req.isAuthenticated()) {
     // If user is already logged in, redirect to their dashboard
-    if (req.session.user.role === "staff") {
+    if (req.user.role === "staff") {
       return res.redirect("/dashboard")
     } else {
       return res.redirect("/applicant/dashboard")

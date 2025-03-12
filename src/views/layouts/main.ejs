@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="header-right">
-          <button class="icon-button" title="Settings">
+          <button class="icon-button" title="Settings" id="toggleDarkMode">
             <i class="fas fa-cog"></i>
           </button>
           <button class="icon-button" title="Notifications">
@@ -36,7 +36,6 @@
           <div class="avatar">
             <img src="<%= user.avatar || '/images/avatar.png' %>" alt="<%= user.name %>">
           </div>
-          <a href="/auth/logout" class="btn btn-sm btn-outline-light ms-2">Logout</a>
         </div>
       </header>
 
@@ -44,12 +43,16 @@
       <aside class="app-sidebar">
         <nav class="sidebar-nav">
           <div class="nav-section">
+            <a href="<%= user.role === 'staff' ? '/dashboard' : '/applicant/dashboard' %>" class="nav-item <%= title === 'Staff Dashboard' || title === 'Applicant Dashboard' ? 'active' : '' %>">
+              <i class="fas fa-home"></i>
+              <span>Dashboard</span>
+            </a>
             <a href="<%= user.role === 'staff' ? '/dashboard/messages' : '/applicant/messages' %>" class="nav-item">
               <i class="fas fa-comment-alt"></i>
               <span>Messages</span>
               <span class="badge">10</span>
             </a>
-            <a href="<%= user.role === 'staff' ? '/calendar' : '/calendar/applicant' %>" class="nav-item">
+            <a href="<%= user.role === 'staff' ? '/calendar' : '/calendar/applicant' %>" class="nav-item <%= title === 'Job Calendar' ? 'active' : '' %>">
               <i class="fas fa-calendar-alt"></i>
               <span>Calendar</span>
               <% if (user.role === 'staff') { %>
@@ -62,14 +65,23 @@
           
           <div class="nav-section">
             <div class="nav-section-title">RECRUITMENT</div>
-            <a href="<%= user.role === 'staff' ? '/jobs' : '/applicant/dashboard' %>" class="nav-item <%= title.includes('Jobs') ? 'active' : '' %>">
+            <a href="<%= user.role === 'staff' ? '/jobs' : '/applicant/dashboard' %>" class="nav-item <%= title.includes('Jobs') || title === 'Applicant Dashboard' ? 'active' : '' %>">
               <i class="fas fa-briefcase"></i>
               <span>Jobs</span>
             </a>
             <% if (user.role === 'staff') { %>
-              <a href="/dashboard" class="nav-item <%= title === 'Staff Dashboard' ? 'active' : '' %>">
+              <a href="/candidates" class="nav-item <%= title === 'Candidates' ? 'active' : '' %>">
                 <i class="fas fa-users"></i>
                 <span>Candidates</span>
+              </a>
+            <% } else { %>
+              <a href="/applicant/applications" class="nav-item <%= title === 'My Applications' ? 'active' : '' %>">
+                <i class="fas fa-file-alt"></i>
+                <span>My Applications</span>
+              </a>
+              <a href="/applicant/profile" class="nav-item <%= title === 'My Profile' ? 'active' : '' %>">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
               </a>
             <% } %>
           </div>
@@ -87,6 +99,13 @@
               </a>
             </div>
           <% } %>
+          
+          <div class="nav-section mt-auto">
+            <a href="/auth/logout" class="nav-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
         </nav>
       </aside>
 

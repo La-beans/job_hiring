@@ -28,7 +28,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: true,
     cookie: { secure: process.env.NODE_ENV === "production" },
@@ -39,18 +39,12 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
-// Make user available to all views
-app.use((req, res, next) => {
-  res.locals.user = req.user || null
-  next()
-})
-
 // Database connection
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "job_portal",
   waitForConnections: true,
   connectionLimit: 10,
 })
@@ -60,14 +54,13 @@ passport.use(
   "applicant",
   new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM applicants WHERE email = ?", [email])
+      const [rows] = await pool.query('SELECT *, "applicant" as role FROM applicants WHERE email = ?', [email])
       if (rows.length === 0) {
         return done(null, false, { message: "Incorrect email." })
       }
       const user = rows[0]
       const isMatch = await bcrypt.compare(password, user.password)
       if (isMatch) {
-        user.role = "applicant" // Set role
         return done(null, user)
       } else {
         return done(null, false, { message: "Incorrect password." })
@@ -82,14 +75,13 @@ passport.use(
   "staff",
   new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM staff WHERE email = ?", [email])
+      const [rows] = await pool.query('SELECT *, "staff" as role FROM staff WHERE email = ?', [email])
       if (rows.length === 0) {
         return done(null, false, { message: "Incorrect email." })
       }
       const user = rows[0]
       const isMatch = await bcrypt.compare(password, user.password)
       if (isMatch) {
-        user.role = "staff" // Set role
         return done(null, user)
       } else {
         return done(null, false, { message: "Incorrect password." })
@@ -101,6 +93,7 @@ passport.use(
 )
 
 passport.serializeUser((user, done) => {
+  // Store both the id and role to distinguish between staff and applicants
   done(null, { id: user.id, role: user.role })
 })
 
@@ -108,7 +101,7 @@ passport.deserializeUser(async (data, done) => {
   try {
     const { id, role } = data
     const table = role === "staff" ? "staff" : "applicants"
-    const [rows] = await pool.query(`SELECT * FROM ${table} WHERE id = ?`, [id])
+    const [rows] = await pool.query(`SELECT *, '${role}' as role FROM ${table} WHERE id = ?`, [id])
     if (rows.length === 0) {
       return done(null, false)
     }
@@ -118,6 +111,12 @@ passport.deserializeUser(async (data, done) => {
   }
 })
 
+// Make user available to all views
+app.use((req, res, next) => {
+  res.locals.user = req.user
+  next()
+})
+
 // Routes
 const indexRouter = require("./routes/index")
 const authRouter = require("./routes/auth")
@@ -125,6 +124,7 @@ const dashboardRouter = require("./routes/dashboard")
 const jobsRouter = require("./routes/jobs")
 const candidatesRouter = require("./routes/candidates")
 const calendarRouter = require("./routes/calendar")
+const applicantRouter = require("./routes/applicant")
 
 app.use("/", indexRouter)
 app.use("/auth", authRouter)
@@ -132,13 +132,24 @@ app.use("/dashboard", dashboardRouter)
 app.use("/jobs", jobsRouter)
 app.use("/candidates", candidatesRouter)
 app.use("/calendar", calendarRouter)
+app.use("/applicant", applicantRouter)
 
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).render("error", {
+    title: "Error",
     message: "Something went wrong!",
     error: process.env.NODE_ENV === "development" ? err : {},
+  })
+})
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).render("error", {
+    title: "Page Not Found",
+    message: "The page you are looking for does not exist.",
+    error: {},
   })
 })
 

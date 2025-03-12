@@ -1,0 +1,42 @@
+<div class="applications-container">
+    <h1 class="page-title">My Applications</h1>
+  
+    <% if (applications && applications.length > 0) { %>
+      <div class="applications-list">
+        <% applications.forEach(function(application) { %>
+          <div class="application-card">
+            <div class="application-header">
+              <div class="application-icon-title">
+                <span class="job-icon"><%= application.job_icon %></span>
+                <div>
+                  <h3 class="job-title"><%= application.job_title %></h3>
+                  <p class="job-location"><%= application.job_location %></p>
+                </div>
+              </div>
+              <div class="application-status <%= application.stage.toLowerCase().replace(' ', '-') %>">
+                <%= application.stage %>
+              </div>
+            </div>
+            <div class="application-details">
+              <div class="application-info">
+                <p><strong>Applied on:</strong> <%= new Date(application.created_at).toLocaleDateString() %></p>
+                <p><strong>Name:</strong> <%= application.first_name %> <%= application.last_name %></p>
+                <p><strong>Email:</strong> <%= application.email %></p>
+                <p><strong>Phone:</strong> <%= application.phone %></p>
+              </div>
+              <div class="application-actions">
+                <a href="/jobs/<%= application.job_id %>" class="btn btn-outline-primary btn-sm">View Job</a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="no-applications">
+        <p>You haven't applied to any jobs yet.</p>
+        <a href="/applicant/dashboard" class="btn btn-primary">Browse Jobs</a>
+      </div>
+    <% } %>
+  </div>
+  
+  

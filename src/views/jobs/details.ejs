@@ -1,10 +1,16 @@
 <div class="job-details-container">
   <div class="job-details-header">
     <button onclick="history.back()" class="btn btn-link back-button">
-      <i class="fas fa-arrow-left"></i> Back to <%= user.role === 'staff' ? 'Candidates' : 'Jobs' %>
+      <i class="fas fa-arrow-left"></i> Back to <%= user.role === 'staff' ? 'Jobs' : 'Dashboard' %>
     </button>
+    
+    <% if (user.role === 'staff') { %>
+      <a href="/jobs/<%= job.id %>/edit" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Edit Job
+      </a>
+    <% } %>
   </div>
-  
+
   <div class="job-details-content">
     <div class="job-header">
       <div class="job-icon-container">
@@ -24,7 +30,7 @@
       <ul>
         <li><%= job.experience %> of relevant experience</li>
         <li>Strong communication and collaboration skills</li>
-        <li>Ability to work <%= job.location.toLowerCase() %></li>
+        <li>Ability to work <%= job.location.toLowerCase() === 'remote' ? 'remotely' : 'in ' + job.location %></li>
         <li>Passion for innovation and problem-solving</li>
       </ul>
       
@@ -35,6 +41,10 @@
         <li>Flexible work environment</li>
         <li>Collaborative team culture</li>
       </ul>
+      
+      <div class="job-dates">
+        <p><strong>Application Period:</strong> <%= new Date(job.startDate).toLocaleDateString() %> to <%= new Date(job.endDate).toLocaleDateString() %></p>
+      </div>
     </section>
     
     <% if (user.role === 'staff') { %>

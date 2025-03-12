@@ -4,7 +4,7 @@
       <i class="fas fa-times"></i>
     </button>
   </div>
-  
+
   <div class="application-content">
     <h1 class="application-title">Apply for <%= job.title %></h1>
     <p class="application-subtitle">Please fill out the form below to apply for this position.</p>
@@ -13,17 +13,17 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="firstName" class="form-label">First Name</label>
-          <input type="text" class="form-control" id="firstName" name="firstName" required>
+          <input type="text" class="form-control" id="firstName" name="firstName" value="<%= user.name.split(' ')[0] || '' %>" required>
         </div>
         <div class="col-md-6 mb-3">
           <label for="lastName" class="form-label">Last Name</label>
-          <input type="text" class="form-control" id="lastName" name="lastName" required>
+          <input type="text" class="form-control" id="lastName" name="lastName" value="<%= user.name.split(' ').slice(1).join(' ') || '' %>" required>
         </div>
       </div>
       
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
       </div>
       
       <div class="mb-3">
@@ -139,7 +139,7 @@ dropZone.addEventListener('drop', handleDrop, false);
 function handleDrop(e) {
   const dt = e.dataTransfer;
   const files = dt.files;
-  
+
   if (files.length) {
     fileInput.files = files;
     updateFileInfo(files[0]);

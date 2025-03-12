@@ -1,5 +1,5 @@
 <div class="calendar-container">
-  <h1 class="page-title">Calendar</h1>
+  <h1 class="page-title">Job Calendar</h1>
 
   <div class="calendar-layout">
     <div class="calendar-sidebar">
@@ -28,45 +28,59 @@
           </div>
           
           <div class="days">
-            <% for (let i = 24; i <= 28; i++) { %>
-              <button class="day"><%= i %></button>
+            <% 
+              // Generate mini calendar
+              const today = new Date();
+              const currentYear = today.getFullYear();
+              const currentMonth = today.getMonth();
+              const firstDay = new Date(currentYear, currentMonth, 1);
+              const lastDay = new Date(currentYear, currentMonth + 1, 0);
+              const daysInMonth = lastDay.getDate();
+              
+              // Calculate the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
+              let firstDayOfWeek = firstDay.getDay();
+              // Adjust for Monday as first day of week
+              firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+              
+              // Previous month days
+              const prevMonth = new Date(currentYear, currentMonth, 0);
+              const daysInPrevMonth = prevMonth.getDate();
+              
+              for (let i = daysInPrevMonth - firstDayOfWeek + 1; i <= daysInPrevMonth; i++) {
+            %>
+              <button class="day other-month"><%= i %></button>
             <% } %>
-            <button class="day other-month">1</button>
-            <button class="day other-month">2</button>
             
-            <% for (let i = 0; i < 7; i++) { %>
-              <button class="day other-month"></button>
+            <!-- Current month days -->
+            <% for (let i = 1; i <= daysInMonth; i++) { 
+              const isToday = i === today.getDate();
+            %>
+              <button class="day <%= isToday ? 'current' : '' %>"><%= i %></button>
             <% } %>
             
-            <% for (let i = 0; i < 7; i++) { %>
-              <button class="day other-month"></button>
-            <% } %>
-            
-            <% for (let i = 0; i < 7; i++) { %>
-              <button class="day other-month"></button>
-            <% } %>
-            
-            <% for (let i = 0; i < 3; i++) { %>
-              <button class="day other-month"></button>
-            <% } %>
-            
-            <% for (let i = 1; i <= 6; i++) { %>
-              <button class="day"><%= i %></button>
+            <!-- Next month days -->
+            <% 
+              const totalCells = 42; // 6 rows x 7 days
+              const remainingCells = totalCells - (firstDayOfWeek + daysInMonth);
+              for (let i = 1; i <= remainingCells; i++) { 
+            %>
+              <button class="day other-month"><%= i %></button>
             <% } %>
           </div>
         </div>
       </div>
       
-      <div class="event-list">
-        <h3>Upcoming Events</h3>
-        <% events.forEach(function(event) { %>
-          <div class="event-item">
-            <div class="event-title"><%= event.title %></div>
-            <div class="event-date"><%= new Date(event.start_date).toLocaleString() %></div>
-            <div class="event-type"><%= event.event_type %></div>
-            <div class="event-status"><%= event.status %></div>
-          </div>
-        <% }); %>
+      <div class="job-openings">
+        <h3>Current Job Openings</h3>
+        <div class="job-list">
+          <% jobs.forEach(function(job) { %>
+            <div class="job-item">
+              <div class="job-item-color <%= job.colorScheme %>-bg"></div>
+              <span class="job-item-title"><%= job.title %></span>
+              <span class="job-item-dates"><%= job.startDate.slice(5) %> - <%= job.endDate.slice(5) %></span>
+            </div>
+          <% }); %>
+        </div>
       </div>
     </div>
     
@@ -95,64 +109,53 @@
         </div>
         
         <div class="calendar-days">
-          <% for (let week = 0; week < 5; week++) { %>
-            <% for (let day = 1; day <= 7; day++) { %>
-              <div class="calendar-day <%= (week === 0 && day >= 1 && day <= 5) || (week === 1 && day === 7) ? 'has-event' : '' %>">
-                <span class="day-number"><%= week * 7 + day %></span>
-                <% if (week === 0 && day >= 1 && day <= 5) { %>
-                  <div class="event-marker">ff</div>
-                <% } %>
-                <% if (week === 1 && day === 7) { %>
-                  <div class="event-marker">ff</div>
-                <% } %>
-              </div>
-            <% } %>
+          <% 
+            // Generate calendar days for the current month
+            
+            // Calculate total cells needed (previous month days + current month days + next month days)
+            const totalCells = Math.ceil((firstDayOfWeek + daysInMonth) / 7) * 7;
+            
+            // Generate calendar cells
+            for (let i = 0; i < totalCells; i++) {
+              const dayOfMonth = i - firstDayOfWeek + 1;
+              const isCurrentMonth = dayOfMonth > 0 && dayOfMonth <= daysInMonth;
+              const cellDate = new Date(currentYear, currentMonth, dayOfMonth);
+              
+              // Check if any job falls on this date
+              const hasEvent = jobs.some(job => {
+                const startDate = new Date(job.startDate);
+                const endDate = new Date(job.endDate);
+                return cellDate >= startDate && cellDate <= endDate;
+              });
+              
+              const cellClass = isCurrentMonth 
+                ? (hasEvent ? 'has-event' : '') 
+                : 'other-month';
+          %>
+            <div class="calendar-day <%= cellClass %>">
+              <span class="day-number"><%= isCurrentMonth ? dayOfMonth : '' %></span>
+              <% if (hasEvent) { %>
+                <div class="event-marker">
+                  <% 
+                    // Find jobs for this date
+                    const jobsOnDate = jobs.filter(job => {
+                      const startDate = new Date(job.startDate);
+                      const endDate = new Date(job.endDate);
+                      return cellDate >= startDate && cellDate <= endDate;
+                    });
+                    
+                    // Display first job's icon
+                    if (jobsOnDate.length > 0) { 
+                  %>
+                    <%= jobsOnDate[0].icon %>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
           <% } %>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="event-form">
-    <h2>Add New Event</h2>
-    <form action="/calendar" method="POST">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" required>
-      </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" name="description"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="start_date">Start Date</label>
-        <input type="datetime-local" id="start_date" name="start_date" required>
-      </div>
-      <div class="form-group">
-        <label for="end_date">End Date</label>
-        <input type="datetime-local" id="end_date" name="end_date" required>
-      </div>
-      <div class="form-group">
-        <label for="event_type">Event Type</label>
-        <select id="event_type" name="event_type" required>
-          <option value="interview">Interview</option>
-          <option value="application_deadline">Application Deadline</option>
-          <option value="job_posting">Job Posting</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Add Event</button>
-    </form>
-  </div>
 </div>
-
-<script>
-  // Add JavaScript to handle event updates and deletions
-  document.querySelectorAll('.event-item').forEach(item => {
-    item.addEventListener('click', () => {
-      const eventId = item.dataset.eventId;
-      // Open a modal or navigate to an edit page for the event
-    });
-  });
-</script>
 

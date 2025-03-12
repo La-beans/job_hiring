@@ -1,0 +1,162 @@
+<div class="calendar-container">
+    <h1 class="page-title">Job Calendar</h1>
+  
+    <div class="calendar-layout">
+      <div class="calendar-sidebar">
+        <div class="month-calendar">
+          <div class="month-header">
+            <span><%= currentMonth %></span>
+            <div class="month-nav">
+              <button class="icon-button">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="icon-button">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="month-grid">
+            <div class="weekdays">
+              <div>M</div>
+              <div>T</div>
+              <div>W</div>
+              <div>T</div>
+              <div>F</div>
+              <div>S</div>
+              <div>S</div>
+            </div>
+            
+            <div class="days">
+              <% 
+                // Generate mini calendar
+                const today = new Date();
+                const currentYear = today.getFullYear();
+                const currentMonth = today.getMonth();
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                
+                // Calculate the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
+                let firstDayOfWeek = firstDay.getDay();
+                // Adjust for Monday as first day of week
+                firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+                
+                // Previous month days
+                const prevMonth = new Date(currentYear, currentMonth, 0);
+                const daysInPrevMonth = prevMonth.getDate();
+                
+                for (let i = daysInPrevMonth - firstDayOfWeek + 1; i <= daysInPrevMonth; i++) {
+              %>
+                <button class="day other-month"><%= i %></button>
+              <% } %>
+              
+              <!-- Current month days -->
+              <% for (let i = 1; i <= daysInMonth; i++) { 
+                const isToday = i === today.getDate();
+              %>
+                <button class="day <%= isToday ? 'current' : '' %>"><%= i %></button>
+              <% } %>
+              
+              <!-- Next month days -->
+              <% 
+                const totalCells = 42; // 6 rows x 7 days
+                const remainingCells = totalCells - (firstDayOfWeek + daysInMonth);
+                for (let i = 1; i <= remainingCells; i++) { 
+              %>
+                <button class="day other-month"><%= i %></button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="job-openings">
+          <h3>Available Job Openings</h3>
+          <div class="job-list">
+            <% jobs.forEach(function(job) { %>
+              <a href="/jobs/<%= job.id %>" class="job-item">
+                <div class="job-item-color <%= job.colorScheme %>-bg"></div>
+                <span class="job-item-title"><%= job.title %></span>
+                <span class="job-item-dates"><%= job.startDate.slice(5) %> - <%= job.endDate.slice(5) %></span>
+              </a>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="main-calendar">
+        <div class="calendar-header">
+          <h2><%= currentMonth %></h2>
+          <div class="calendar-nav">
+            <button class="icon-button">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="icon-button">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="calendar-grid">
+          <div class="weekday-header">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+          </div>
+          
+          <div class="calendar-days">
+            <% 
+              // Generate calendar days for the current month
+              
+              // Calculate total cells needed (previous month days + current month days + next month days)
+              const totalCells = Math.ceil((firstDayOfWeek + daysInMonth) / 7) * 7;
+              
+              // Generate calendar cells
+              for (let i = 0; i < totalCells; i++) {
+                const dayOfMonth = i - firstDayOfWeek + 1;
+                const isCurrentMonth = dayOfMonth > 0 && dayOfMonth <= daysInMonth;
+                const cellDate = new Date(currentYear, currentMonth, dayOfMonth);
+                
+                // Check if any job falls on this date
+                const hasEvent = jobs.some(job => {
+                  const startDate = new Date(job.startDate);
+                  const endDate = new Date(job.endDate);
+                  return cellDate >= startDate && cellDate <= endDate;
+                });
+                
+                const cellClass = isCurrentMonth 
+                  ? (hasEvent ? 'has-event' : '') 
+                  : 'other-month';
+            %>
+              <div class="calendar-day <%= cellClass %>">
+                <span class="day-number"><%= isCurrentMonth ? dayOfMonth : '' %></span>
+                <% if (hasEvent) { %>
+                  <div class="event-marker">
+                    <% 
+                      // Find jobs for this date
+                      const jobsOnDate = jobs.filter(job => {
+                        const startDate = new Date(job.startDate);
+                        const endDate = new Date(job.endDate);
+                        return cellDate >= startDate && cellDate <= endDate;
+                      });
+                      
+                      // Display first job's icon
+                      if (jobsOnDate.length > 0) { 
+                    %>
+                      <a href="/jobs/<%= jobsOnDate[0].id %>"><%= jobsOnDate[0].icon %></a>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
