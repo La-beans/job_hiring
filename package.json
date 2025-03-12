@@ -7,7 +7,9 @@
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup-db": "node scripts/setup-database.js"
+    "setup-db": "node scripts/setup-database.js",
+    "setup-dirs": "node scripts/ensure-directories.js",
+    "setup": "npm run setup-dirs && npm run setup-db" 
   },
   "keywords": [
     "node",

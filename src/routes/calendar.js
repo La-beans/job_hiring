@@ -1,79 +1,91 @@
 const express = require("express")
 const router = express.Router()
-const { isAuthenticated, isStaff, isApplicant } = require("../middleware/auth")
-const pool = require("../config/database")
-const schedulerService = require("../services/scheduler.service")
+const { isAuthenticated } = require("../middleware/auth")
+const eventService = require("../services/event-service")
+const jobService = require("../services/job-service")
 
-// Get all events for the authenticated user
+// Staff calendar view
 router.get("/", isAuthenticated, async (req, res) => {
   try {
-    const [events] = await pool.query("SELECT * FROM events WHERE user_id = ? AND user_type = ?", [
-      req.user.id,
-      req.user.role,
-    ])
+    // Get current month's start and end dates
+    const now = new Date()
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    const formattedStartDate = startDate.toISOString().split("T")[0]
+    const formattedEndDate = endDate.toISOString().split("T")[0]
+
+    const events = await eventService.getEventsByDateRange(formattedStartDate, formattedEndDate)
+
+    // Get jobs for the calendar
+    const jobs = await jobService.getAllJobs()
+
+    const currentMonth = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(now)
 
     res.render("calendar/index", {
-      title: "Calendar",
+      title: "Job Calendar",
       events,
+      jobs,
+      currentMonth,
       user: req.user,
     })
   } catch (error) {
-    console.error("Error fetching events:", error)
-    res.status(500).render("error", { message: "Error fetching events" })
+    console.error("Error loading calendar:", error)
+    res.status(500).render("error", { message: "Error loading calendar" })
   }
 })
 
-// Create a new event
-router.post("/", isAuthenticated, async (req, res) => {
+// Applicant calendar view
+router.get("/applicant", isAuthenticated, async (req, res) => {
   try {
-    const { title, description, start_date, end_date, event_type } = req.body
-    const [result] = await pool.query(
-      "INSERT INTO events (title, description, start_date, end_date, user_id, user_type, event_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [title, description, start_date, end_date, req.user.id, req.user.role, event_type],
-    )
+    // Get current month's start and end dates
+    const now = new Date()
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    // Schedule a reminder for the new event
-    schedulerService.scheduleReminders()
+    const formattedStartDate = startDate.toISOString().split("T")[0]
+    const formattedEndDate = endDate.toISOString().split("T")[0]
+
+    const events = await eventService.getEventsByDateRange(formattedStartDate, formattedEndDate)
+
+    // Get jobs for the calendar
+    const jobs = await jobService.getAllJobs()
+
+    const currentMonth = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(now)
+
+    res.render("calendar/applicant", {
+      title: "Job Calendar",
+      events,
+      jobs,
+      currentMonth,
+      user: req.user,
+    })
+  } catch (error) {
+    console.error("Error loading calendar:", error)
+    res.status(500).render("error", { message: "Error loading calendar" })
+  }
+})
+
+// Create event (Staff only)
+router.post("/events", isAuthenticated, async (req, res) => {
+  try {
+    const { title, description, startDate, endDate, jobId } = req.body
+
+    await eventService.createEvent(
+      {
+        title,
+        description,
+        startDate,
+        endDate,
+        jobId: jobId || null,
+      },
+      req.user.id,
+    )
 
     res.redirect("/calendar")
   } catch (error) {
     console.error("Error creating event:", error)
     res.status(500).render("error", { message: "Error creating event" })
-  }
-})
-
-// Update an event
-router.put("/:id", isAuthenticated, async (req, res) => {
-  try {
-    const { title, description, start_date, end_date, event_type, status } = req.body
-    await pool.query(
-      "UPDATE events SET title = ?, description = ?, start_date = ?, end_date = ?, event_type = ?, status = ? WHERE id = ? AND user_id = ? AND user_type = ?",
-      [title, description, start_date, end_date, event_type, status, req.params.id, req.user.id, req.user.role],
-    )
-
-    // Reschedule reminders after updating the event
-    schedulerService.scheduleReminders()
-
-    res.redirect("/calendar")
-  } catch (error) {
-    console.error("Error updating event:", error)
-    res.status(500).render("error", { message: "Error updating event" })
-  }
-})
-
-// Delete an event
-router.delete("/:id", isAuthenticated, async (req, res) => {
-  try {
-    await pool.query("DELETE FROM events WHERE id = ? AND user_id = ? AND user_type = ?", [
-      req.params.id,
-      req.user.id,
-      req.user.role,
-    ])
-
-    res.redirect("/calendar")
-  } catch (error) {
-    console.error("Error deleting event:", error)
-    res.status(500).render("error", { message: "Error deleting event" })
   }
 })
 

@@ -39,6 +39,12 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
+// Make user available to all views
+app.use((req, res, next) => {
+  res.locals.user = req.user || null
+  next()
+})
+
 // Database connection
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -61,6 +67,7 @@ passport.use(
       const user = rows[0]
       const isMatch = await bcrypt.compare(password, user.password)
       if (isMatch) {
+        user.role = "applicant" // Set role
         return done(null, user)
       } else {
         return done(null, false, { message: "Incorrect password." })
@@ -82,6 +89,7 @@ passport.use(
       const user = rows[0]
       const isMatch = await bcrypt.compare(password, user.password)
       if (isMatch) {
+        user.role = "staff" // Set role
         return done(null, user)
       } else {
         return done(null, false, { message: "Incorrect password." })

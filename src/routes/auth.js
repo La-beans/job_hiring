@@ -1,8 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const passport = require("passport")
-const bcrypt = require("bcryptjs")
-const pool = require("../config/database")
+const authService = require("../services/auth-service")
 
 // Staff login page
 router.get("/staff-login", (req, res) => {
@@ -33,7 +32,7 @@ router.post(
 router.post(
   "/applicant-login",
   passport.authenticate("applicant", {
-    successRedirect: "/dashboard/applicant",
+    successRedirect: "/applicant/dashboard",
     failureRedirect: "/auth/applicant-login",
     failureFlash: true,
   }),
@@ -44,26 +43,12 @@ router.post("/applicant-signup", async (req, res) => {
   try {
     const { name, email, password, dateOfBirth } = req.body
 
-    // Check if email already exists
-    const [existingUser] = await pool.query("SELECT * FROM applicants WHERE email = ?", [email])
-    if (existingUser.length > 0) {
-      return res.render("auth/applicant-signup", {
-        title: "Applicant Signup",
-        layout: "layouts/blank",
-        error: "Email already in use",
-      })
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    // Insert new applicant
-    await pool.query("INSERT INTO applicants (name, email, password, date_of_birth) VALUES (?, ?, ?, ?)", [
+    await authService.registerApplicant({
       name,
       email,
-      hashedPassword,
+      password,
       dateOfBirth,
-    ])
+    })
 
     res.redirect("/auth/applicant-login")
   } catch (error) {
@@ -71,15 +56,19 @@ router.post("/applicant-signup", async (req, res) => {
     res.render("auth/applicant-signup", {
       title: "Applicant Signup",
       layout: "layouts/blank",
-      error: "An error occurred during signup",
+      error: error.message || "An error occurred during signup",
     })
   }
 })
 
 // Logout
-router.get("/logout", (req, res) => {
-  req.logout()
-  res.redirect("/")
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err)
+    }
+    res.redirect("/")
+  })
 })
 
 module.exports = router

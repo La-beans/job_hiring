@@ -12,30 +12,32 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 })
 
-async function createEventTable() {
+async function createJobsTable() {
   try {
-    // Create events table
+    // Create jobs table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS events (
+      CREATE TABLE IF NOT EXISTS jobs (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         description TEXT,
+        location VARCHAR(100),
+        experience VARCHAR(100),
+        icon VARCHAR(10),
+        color_scheme VARCHAR(50),
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
-        job_id INT,
         created_by INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE SET NULL
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
 
-    console.log("Events table created successfully")
+    console.log("Jobs table created successfully")
   } catch (error) {
-    console.error("Error creating events table:", error)
+    console.error("Error creating jobs table:", error)
   } finally {
     await pool.end()
   }
 }
 
-createEventTable()
+createJobsTable()
 
