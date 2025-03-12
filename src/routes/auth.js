@@ -1,5 +1,8 @@
 const express = require("express")
 const router = express.Router()
+const passport = require("passport")
+const bcrypt = require("bcryptjs")
+const pool = require("../config/database")
 
 // Staff login page
 router.get("/staff-login", (req, res) => {
@@ -11,56 +14,71 @@ router.get("/applicant-login", (req, res) => {
   res.render("auth/applicant-login", { title: "Applicant Login", layout: "layouts/blank" })
 })
 
-// Handle staff login
-router.post("/staff-login", async (req, res) => {
-  const { email, password } = req.body
-
-  // In a real app, you would validate credentials against the database
-  // For demo purposes, we're accepting any email/password combination
-  if (email && password) {
-    req.session.user = {
-      id: 1,
-      name: "HR Staff",
-      email: email,
-      role: "staff",
-      avatar: "/images/avatar.png",
-    }
-    res.redirect("/dashboard")
-  } else {
-    res.render("auth/staff-login", {
-      title: "Staff Login",
-      layout: "layouts/blank",
-      error: "Please enter email and password",
-    })
-  }
+// Applicant signup page
+router.get("/applicant-signup", (req, res) => {
+  res.render("auth/applicant-signup", { title: "Applicant Signup", layout: "layouts/blank" })
 })
 
-// Handle applicant login
-router.post("/applicant-login", async (req, res) => {
-  const { email, password } = req.body
+// Handle staff login
+router.post(
+  "/staff-login",
+  passport.authenticate("staff", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/auth/staff-login",
+    failureFlash: true,
+  }),
+)
 
-  // In a real app, you would validate credentials against the database
-  if (email && password) {
-    req.session.user = {
-      id: 2,
-      name: "Job Applicant",
-      email: email,
-      role: "applicant",
-      avatar: "/images/avatar.png",
+// Handle applicant login
+router.post(
+  "/applicant-login",
+  passport.authenticate("applicant", {
+    successRedirect: "/dashboard/applicant",
+    failureRedirect: "/auth/applicant-login",
+    failureFlash: true,
+  }),
+)
+
+// Handle applicant signup
+router.post("/applicant-signup", async (req, res) => {
+  try {
+    const { name, email, password, dateOfBirth } = req.body
+
+    // Check if email already exists
+    const [existingUser] = await pool.query("SELECT * FROM applicants WHERE email = ?", [email])
+    if (existingUser.length > 0) {
+      return res.render("auth/applicant-signup", {
+        title: "Applicant Signup",
+        layout: "layouts/blank",
+        error: "Email already in use",
+      })
     }
-    res.redirect("/applicant/dashboard")
-  } else {
-    res.render("auth/applicant-login", {
-      title: "Applicant Login",
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Insert new applicant
+    await pool.query("INSERT INTO applicants (name, email, password, date_of_birth) VALUES (?, ?, ?, ?)", [
+      name,
+      email,
+      hashedPassword,
+      dateOfBirth,
+    ])
+
+    res.redirect("/auth/applicant-login")
+  } catch (error) {
+    console.error("Error during signup:", error)
+    res.render("auth/applicant-signup", {
+      title: "Applicant Signup",
       layout: "layouts/blank",
-      error: "Please enter email and password",
+      error: "An error occurred during signup",
     })
   }
 })
 
 // Logout
 router.get("/logout", (req, res) => {
-  req.session.destroy()
+  req.logout()
   res.redirect("/")
 })
 

@@ -1,0 +1,35 @@
+<div class="applicant-dashboard">
+    <h1 class="dashboard-title">Welcome, <%= user.name %></h1>
+  
+    <section class="dashboard-section">
+      <h2 class="section-title">Your Applied Jobs</h2>
+      <div class="job-list">
+        <% appliedJobs.forEach(function(job) { %>
+          <div class="job-card">
+            <h3 class="job-title"><%= job.title %></h3>
+            <p class="job-company"><%= job.company %></p>
+            <p class="job-location"><%= job.location %></p>
+            <p class="job-applied-date">Applied on: <%= job.appliedDate %></p>
+            <p class="job-status">Status: <%= job.status %></p>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+  
+    <section class="dashboard-section">
+      <h2 class="section-title">Recommended Jobs</h2>
+      <div class="job-list">
+        <% recommendedJobs.forEach(function(job) { %>
+          <div class="job-card">
+            <h3 class="job-title"><%= job.title %></h3>
+            <p class="job-company"><%= job.company %></p>
+            <p class="job-location"><%= job.location %></p>
+            <p class="job-posted-date">Posted on: <%= job.postedDate %></p>
+            <a href="/jobs/<%= job.id %>" class="btn btn-primary">View Details</a>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+  </div>
+  
+  

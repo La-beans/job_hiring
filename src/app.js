@@ -3,7 +3,10 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const logger = require("morgan")
 const session = require("express-session")
+const passport = require("passport")
+const LocalStrategy = require("passport-local").Strategy
 const mysql = require("mysql2/promise")
+const bcrypt = require("bcryptjs")
 const dotenv = require("dotenv")
 const ejsLayouts = require("express-ejs-layouts")
 
@@ -25,12 +28,16 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "job-portal-secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: process.env.NODE_ENV === "production" },
   }),
 )
+
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Database connection
 const pool = mysql.createPool({
@@ -42,10 +49,65 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 })
 
-// Make db available to routes
-app.use((req, res, next) => {
-  req.db = pool
-  next()
+// Passport configuration
+passport.use(
+  "applicant",
+  new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
+    try {
+      const [rows] = await pool.query("SELECT * FROM applicants WHERE email = ?", [email])
+      if (rows.length === 0) {
+        return done(null, false, { message: "Incorrect email." })
+      }
+      const user = rows[0]
+      const isMatch = await bcrypt.compare(password, user.password)
+      if (isMatch) {
+        return done(null, user)
+      } else {
+        return done(null, false, { message: "Incorrect password." })
+      }
+    } catch (error) {
+      return done(error)
+    }
+  }),
+)
+
+passport.use(
+  "staff",
+  new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
+    try {
+      const [rows] = await pool.query("SELECT * FROM staff WHERE email = ?", [email])
+      if (rows.length === 0) {
+        return done(null, false, { message: "Incorrect email." })
+      }
+      const user = rows[0]
+      const isMatch = await bcrypt.compare(password, user.password)
+      if (isMatch) {
+        return done(null, user)
+      } else {
+        return done(null, false, { message: "Incorrect password." })
+      }
+    } catch (error) {
+      return done(error)
+    }
+  }),
+)
+
+passport.serializeUser((user, done) => {
+  done(null, { id: user.id, role: user.role })
+})
+
+passport.deserializeUser(async (data, done) => {
+  try {
+    const { id, role } = data
+    const table = role === "staff" ? "staff" : "applicants"
+    const [rows] = await pool.query(`SELECT * FROM ${table} WHERE id = ?`, [id])
+    if (rows.length === 0) {
+      return done(null, false)
+    }
+    done(null, rows[0])
+  } catch (error) {
+    done(error)
+  }
 })
 
 // Routes
@@ -62,13 +124,6 @@ app.use("/dashboard", dashboardRouter)
 app.use("/jobs", jobsRouter)
 app.use("/candidates", candidatesRouter)
 app.use("/calendar", calendarRouter)
-
-// Middleware to check authentication
-app.use((req, res, next) => {
-  // Store user in locals for views
-  res.locals.user = req.session.user || null
-  next()
-})
 
 // Error handler
 app.use((err, req, res, next) => {

@@ -87,52 +87,47 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
 router.get("/applicant", isAuthenticated, isApplicant, async (req, res) => {
   try {
     // Mock data for demonstration
-    const jobs = [
+    const appliedJobs = [
       {
         id: 1,
         title: "Sr. UX Designer",
-        icon: "��",
+        company: "TechCorp",
         location: "Bengaluru",
-        experience: "3 years exp.",
-        applications: 45,
-        trend: "25 in last week",
-        trendUp: true,
-        postedDays: 2,
-        color: "from-cyan-400 to-blue-500",
-        borderColor: "border-cyan-500/20",
+        appliedDate: "2023-03-15",
+        status: "Under Review",
       },
       {
         id: 2,
-        title: "Growth Manager",
-        icon: "🚀",
+        title: "Product Manager",
+        company: "InnovateNow",
         location: "Remote",
-        experience: "2+ years exp.",
-        applications: 38,
-        trend: "9 in last week",
-        trendUp: true,
-        postedDays: 5,
-        color: "from-red-400 to-pink-500",
-        borderColor: "border-red-500/20",
+        appliedDate: "2023-03-10",
+        status: "Interview Scheduled",
       },
+    ]
+
+    const recommendedJobs = [
       {
         id: 3,
-        title: "Financial Analyst",
-        icon: "💰",
+        title: "UX Researcher",
+        company: "DesignHub",
         location: "Mumbai",
-        experience: "5+ years exp.",
-        applications: 25,
-        trend: "26 in last week",
-        trendUp: true,
-        postedDays: 10,
-        color: "from-yellow-400 to-orange-500",
-        borderColor: "border-yellow-500/20",
+        postedDate: "2023-03-18",
+      },
+      {
+        id: 4,
+        title: "Frontend Developer",
+        company: "WebSolutions",
+        location: "Delhi",
+        postedDate: "2023-03-17",
       },
     ]
 
     res.render("dashboard/applicant", {
       title: "Applicant Dashboard",
-      jobs,
-      user: req.session.user,
+      user: req.user,
+      appliedJobs,
+      recommendedJobs,
     })
   } catch (error) {
     console.error("Error loading applicant dashboard:", error)

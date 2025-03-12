@@ -1,29 +1,27 @@
-// Authentication middleware
 const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-      return next()
-    }
-    res.redirect("/")
+  if (req.isAuthenticated()) {
+    return next()
   }
-  
-  const isStaff = (req, res, next) => {
-    if (req.session.user && req.session.user.role === "staff") {
-      return next()
-    }
-    res.redirect("/")
+  res.redirect("/")
+}
+
+const isStaff = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.role === "staff") {
+    return next()
   }
-  
-  const isApplicant = (req, res, next) => {
-    if (req.session.user && req.session.user.role === "applicant") {
-      return next()
-    }
-    res.redirect("/")
+  res.redirect("/")
+}
+
+const isApplicant = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.role === "applicant") {
+    return next()
   }
-  
-  module.exports = {
-    isAuthenticated,
-    isStaff,
-    isApplicant,
-  }
-  
-  
+  res.redirect("/")
+}
+
+module.exports = {
+  isAuthenticated,
+  isStaff,
+  isApplicant,
+}
+

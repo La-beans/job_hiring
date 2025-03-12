@@ -1,183 +1,182 @@
 <section class="jobs-dashboard">
-    <div class="search-bar-container">
-      <div class="search-bar">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" class="search-input" placeholder="Search for jobs, candidates and more...">
-      </div>
-    </div>
-    
-    <div class="job-grid">
-      <% jobs.forEach(function(job) { %>
-        <div class="job-card">
-          <div class="job-card-header">
-            <div class="job-icon-title">
-              <span class="job-icon"><%= job.icon %></span>
-              <div>
-                <h3 class="job-title"><%= job.title %></h3>
-                <p class="job-posted">Posted <%= job.postedDays %> days ago</p>
-              </div>
-            </div>
-            <div class="job-actions">
-              <button class="icon-button transparent" onclick="editJob('<%= job.id %>')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="icon-button transparent" onclick="viewJob('<%= job.id %>')">
-                <i class="fas fa-arrow-up-right"></i>
-              </button>
-            </div>
-          </div>
-          <div class="job-details">
-            <span><%= job.location %></span>
-            <span><%= job.experience %></span>
-          </div>
-          <div class="job-metrics">
-            <div>
-              <div class="job-applications"><%= job.applications %></div>
-              <div class="job-trend <%= job.trendUp ? 'trend-up' : 'trend-down' %>"><%= job.trend %></div>
-            </div>
-            <div class="job-color-box <%= job.color.replace('from-', '').replace('to-', '') %>"></div>
-          </div>
-        </div>
-      <% }); %>
-    </div>
-    
-    <button class="floating-action-btn" onclick="openCreateJobModal()">
-      <i class="fas fa-plus"></i>
-    </button>
-  </section>
-  
-  <!-- Create Job Modal -->
-  <div class="modal fade" id="createJobModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create New Job</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-muted">Fill out the details below to create a new job posting.</p>
-          <form id="createJobForm" action="/jobs" method="POST">
-            <div class="mb-3">
-              <input type="text" class="form-control" name="title" placeholder="Job Title" required>
-            </div>
-            
-            <div class="mb-3">
-              <textarea class="form-control" name="description" rows="4" placeholder="Role Description" required></textarea>
-            </div>
-            
-            <div class="row mb-3">
-              <div class="col">
-                <select class="form-select" name="location" required>
-                  <option value="" disabled selected>Job Location</option>
-                  <option value="remote">Remote</option>
-                  <option value="onsite">Local</option>
-                </select>
-              </div>
-              <div class="col">
-                <select class="form-select" name="experience" required>
-                  <option value="" disabled selected>Work Experience</option>
-                  <option value="1 year">1 year</option>
-                  <option value="2 years">2 years</option>
-                  <option value="3 years">3 years</option>
-                  <option value="4 years">4 years</option>
-                  <option value="5+ years">5+ years</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="row mb-3">
-              <div class="col">
-                <label class="form-label">Start Date</label>
-                <input type="date" class="form-control" name="startDate" required>
-              </div>
-              <div class="col">
-                <label class="form-label">End Date</label>
-                <input type="date" class="form-control" name="endDate" required>
-              </div>
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Select Emoji</label>
-              <div class="emoji-selector">
-                <button type="button" class="emoji-option" data-emoji="🎨">🎨</button>
-                <button type="button" class="emoji-option" data-emoji="🚀">🚀</button>
-                <button type="button" class="emoji-option" data-emoji="💰">💰</button>
-                <button type="button" class="emoji-option" data-emoji="🔒">🔒</button>
-                <button type="button" class="emoji-option" data-emoji="💻">💻</button>
-                <button type="button" class="emoji-option" data-emoji="📊">📊</button>
-                <button type="button" class="emoji-option" data-emoji="🎯">🎯</button>
-                <button type="button" class="emoji-option" data-emoji="🤝">🤝</button>
-              </div>
-              <input type="hidden" name="icon" id="selectedEmoji" value="🎨">
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Color Scheme</label>
-              <div class="color-schemes">
-                <div class="color-option">
-                  <input type="radio" name="colorScheme" id="colorBlue" value="blue" checked>
-                  <label for="colorBlue">
-                    <span class="color-preview blue"></span>
-                    Blue
-                  </label>
-                </div>
-                <div class="color-option">
-                  <input type="radio" name="colorScheme" id="colorRed" value="red">
-                  <label for="colorRed">
-                    <span class="color-preview red"></span>
-                    Red
-                  </label>
-                </div>
-                <div class="color-option">
-                  <input type="radio" name="colorScheme" id="colorYellow" value="yellow">
-                  <label for="colorYellow">
-                    <span class="color-preview yellow"></span>
-                    Yellow
-                  </label>
-                </div>
-                <div class="color-option">
-                  <input type="radio" name="colorScheme" id="colorGreen" value="green">
-                  <label for="colorGreen">
-                    <span class="color-preview green"></span>
-                    Green
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary w-100">Create Job</button>
-          </form>
-        </div>
-      </div>
+  <div class="search-bar-container">
+    <div class="search-bar">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" class="search-input" placeholder="Search for jobs, candidates and more...">
     </div>
   </div>
   
-  <script>
-  function viewJob(jobId) {
-    window.location.href = `/jobs/${jobId}`;
-  }
+  <div class="job-grid">
+    <% jobs.forEach(function(job) { %>
+      <div class="job-card">
+        <div class="job-card-header">
+          <div class="job-icon-title">
+            <span class="job-icon"><%= job.icon %></span>
+            <div>
+              <h3 class="job-title"><%= job.title %></h3>
+              <p class="job-posted">Posted <%= job.postedDays %> days ago</p>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="icon-button transparent" onclick="editJob('<%= job.id %>')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="icon-button transparent" onclick="viewJob('<%= job.id %>')">
+              <i class="fas fa-arrow-up-right"></i>
+            </button>
+          </div>
+        </div>
+        <div class="job-details">
+          <span><%= job.location %></span>
+          <span><%= job.experience %></span>
+        </div>
+        <div class="job-metrics">
+          <div>
+            <div class="job-applications"><%= job.applications %></div>
+            <div class="job-trend <%= job.trendUp ? 'trend-up' : 'trend-down' %>"><%= job.trend %></div>
+          </div>
+          <div class="job-color-box <%= job.color.replace('from-', '').replace('to-', '') %>"></div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
   
-  function editJob(jobId) {
-    // Open job edit modal or redirect to edit page
-    window.location.href = `/jobs/${jobId}/edit`;
-  }
-  
-  function openCreateJobModal() {
-    const modal = new bootstrap.Modal(document.getElementById('createJobModal'));
-    modal.show();
-  }
-  
-  // Emoji selector functionality
-  document.querySelectorAll('.emoji-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const emoji = option.getAttribute('data-emoji');
-      document.getElementById('selectedEmoji').value = emoji;
-      
-      // Update active state
-      document.querySelectorAll('.emoji-option').forEach(opt => opt.classList.remove('active'));
-      option.classList.add('active');
-    });
+  <button class="floating-action-btn" onclick="openCreateJobModal()">
+    <i class="fas fa-plus"></i>
+  </button>
+</section>
+
+<!-- Create Job Modal -->
+<div class="modal fade" id="createJobModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Job</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Fill out the details below to create a new job posting.</p>
+        <form id="createJobForm" action="/jobs" method="POST">
+          <div class="mb-3">
+            <input type="text" class="form-control" name="title" placeholder="Job Title" required>
+          </div>
+          
+          <div class="mb-3">
+            <textarea class="form-control" name="description" rows="4" placeholder="Role Description" required></textarea>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col">
+              <select class="form-select" name="location" required>
+                <option value="" disabled selected>Job Location</option>
+                <option value="remote">Remote</option>
+                <option value="onsite">Local</option>
+              </select>
+            </div>
+            <div class="col">
+              <select class="form-select" name="experience" required>
+                <option value="" disabled selected>Work Experience</option>
+                <option value="1 year">1 year</option>
+                <option value="2 years">2 years</option>
+                <option value="3 years">3 years</option>
+                <option value="4 years">4 years</option>
+                <option value="5+ years">5+ years</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" name="startDate" required>
+            </div>
+            <div class="col">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" name="endDate" required>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Select Emoji</label>
+            <div class="emoji-selector">
+              <button type="button" class="emoji-option" data-emoji="🎨">🎨</button>
+              <button type="button" class="emoji-option" data-emoji="🚀">🚀</button>
+              <button type="button" class="emoji-option" data-emoji="💰">💰</button>
+              <button type="button" class="emoji-option" data-emoji="🔒">🔒</button>
+              <button type="button" class="emoji-option" data-emoji="💻">💻</button>
+              <button type="button" class="emoji-option" data-emoji="📊">📊</button>
+              <button type="button" class="emoji-option" data-emoji="🎯">🎯</button>
+              <button type="button" class="emoji-option" data-emoji="🤝">🤝</button>
+            </div>
+            <input type="hidden" name="icon" id="selectedEmoji" value="🎨">
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Color Scheme</label>
+            <div class="color-schemes">
+              <div class="color-option">
+                <input type="radio" name="colorScheme" id="colorBlue" value="blue" checked>
+                <label for="colorBlue">
+                  <span class="color-preview blue"></span>
+                  Blue
+                </label>
+              </div>
+              <div class="color-option">
+                <input type="radio" name="colorScheme" id="colorRed" value="red">
+                <label for="colorRed">
+                  <span class="color-preview red"></span>
+                  Red
+                </label>
+              </div>
+              <div class="color-option">
+                <input type="radio" name="colorScheme" id="colorYellow" value="yellow">
+                <label for="colorYellow">
+                  <span class="color-preview yellow"></span>
+                  Yellow
+                </label>
+              </div>
+              <div class="color-option">
+                <input type="radio" name="colorScheme" id="colorGreen" value="green">
+                <label for="colorGreen">
+                  <span class="color-preview green"></span>
+                  Green
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100">Create Job</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function viewJob(jobId) {
+  window.location.href = `/jobs/${jobId}`;
+}
+
+function editJob(jobId) {
+  // Open job edit modal or redirect to edit page
+  window.location.href = `/jobs/${jobId}/edit`;
+}
+
+function openCreateJobModal() {
+  const modal = new bootstrap.Modal(document.getElementById('createJobModal'));
+  modal.show();
+}
+
+// Emoji selector functionality
+document.querySelectorAll('.emoji-option').forEach(option => {
+  option.addEventListener('click', () => {
+    const emoji = option.getAttribute('data-emoji');
+    document.getElementById('selectedEmoji').value = emoji;
+    
+    // Update active state
+    document.querySelectorAll('.emoji-option').forEach(opt => opt.classList.remove('active'));
+    option.classList.add('active');
   });
-  </script>
-  
-  
+});
+</script>
+

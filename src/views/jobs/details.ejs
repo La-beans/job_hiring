@@ -1,53 +1,52 @@
 <div class="job-details-container">
-    <div class="job-details-header">
-      <button onclick="history.back()" class="btn btn-link back-button">
-        <i class="fas fa-arrow-left"></i> Back to <%= user.role === 'staff' ? 'Candidates' : 'Jobs' %>
-      </button>
-    </div>
-    
-    <div class="job-details-content">
-      <div class="job-header">
-        <div class="job-icon-container">
-          <span class="job-icon large"><%= job.icon %></span>
-        </div>
-        <div>
-          <h1 class="job-title"><%= job.title %></h1>
-          <p class="job-meta"><%= job.location %> • <%= job.experience %></p>
-        </div>
-      </div>
-      
-      <section class="job-description">
-        <h2>Job Description</h2>
-        <p><%= job.description %></p>
-        
-        <h3>Requirements:</h3>
-        <ul>
-          <li><%= job.experience %> of relevant experience</li>
-          <li>Strong communication and collaboration skills</li>
-          <li>Ability to work <%= job.location.toLowerCase() %></li>
-          <li>Passion for innovation and problem-solving</li>
-        </ul>
-        
-        <h3>What we offer:</h3>
-        <ul>
-          <li>Competitive salary and benefits</li>
-          <li>Professional development opportunities</li>
-          <li>Flexible work environment</li>
-          <li>Collaborative team culture</li>
-        </ul>
-      </section>
-      
-      <% if (user.role === 'staff') { %>
-        <div class="job-applications">
-          <h3>Applications:</h3>
-          <p><%= job.applications %> candidates have applied for this position</p>
-        </div>
-      <% } else { %>
-        <div class="text-center mt-4">
-          <a href="/jobs/<%= job.id %>/apply" class="btn btn-success apply-button">Apply</a>
-        </div>
-      <% } %>
-    </div>
+  <div class="job-details-header">
+    <button onclick="history.back()" class="btn btn-link back-button">
+      <i class="fas fa-arrow-left"></i> Back to <%= user.role === 'staff' ? 'Candidates' : 'Jobs' %>
+    </button>
   </div>
   
-  
+  <div class="job-details-content">
+    <div class="job-header">
+      <div class="job-icon-container">
+        <span class="job-icon large"><%= job.icon %></span>
+      </div>
+      <div>
+        <h1 class="job-title"><%= job.title %></h1>
+        <p class="job-meta"><%= job.location %> • <%= job.experience %></p>
+      </div>
+    </div>
+    
+    <section class="job-description">
+      <h2>Job Description</h2>
+      <p><%= job.description %></p>
+      
+      <h3>Requirements:</h3>
+      <ul>
+        <li><%= job.experience %> of relevant experience</li>
+        <li>Strong communication and collaboration skills</li>
+        <li>Ability to work <%= job.location.toLowerCase() %></li>
+        <li>Passion for innovation and problem-solving</li>
+      </ul>
+      
+      <h3>What we offer:</h3>
+      <ul>
+        <li>Competitive salary and benefits</li>
+        <li>Professional development opportunities</li>
+        <li>Flexible work environment</li>
+        <li>Collaborative team culture</li>
+      </ul>
+    </section>
+    
+    <% if (user.role === 'staff') { %>
+      <div class="job-applications">
+        <h3>Applications:</h3>
+        <p><%= job.applications %> candidates have applied for this position</p>
+      </div>
+    <% } else { %>
+      <div class="text-center mt-4">
+        <a href="/jobs/<%= job.id %>/apply" class="btn btn-success apply-button">Apply</a>
+      </div>
+    <% } %>
+  </div>
+</div>
+
