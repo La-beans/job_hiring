@@ -32,9 +32,9 @@
               // Generate mini calendar
               const today = new Date();
               const currentYear = today.getFullYear();
-              const currentMonth = today.getMonth();
-              const firstDay = new Date(currentYear, currentMonth, 1);
-              const lastDay = new Date(currentYear, currentMonth + 1, 0);
+              const currentMonthIndex = today.getMonth();
+              const firstDay = new Date(currentYear, currentMonthIndex, 1);
+              const lastDay = new Date(currentYear, currentMonthIndex + 1, 0);
               const daysInMonth = lastDay.getDate();
               
               // Calculate the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
@@ -43,7 +43,7 @@
               firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
               
               // Previous month days
-              const prevMonth = new Date(currentYear, currentMonth, 0);
+              const prevMonth = new Date(currentYear, currentMonthIndex, 0);
               const daysInPrevMonth = prevMonth.getDate();
               
               for (let i = daysInPrevMonth - firstDayOfWeek + 1; i <= daysInPrevMonth; i++) {
@@ -113,13 +113,13 @@
             // Generate calendar days for the current month
             
             // Calculate total cells needed (previous month days + current month days + next month days)
-            const totalCells = Math.ceil((firstDayOfWeek + daysInMonth) / 7) * 7;
+            const totalCells1 = Math.ceil((firstDayOfWeek + daysInMonth) / 7) * 7;
             
             // Generate calendar cells
-            for (let i = 0; i < totalCells; i++) {
+            for (let i = 0; i < totalCells1; i++) {
               const dayOfMonth = i - firstDayOfWeek + 1;
               const isCurrentMonth = dayOfMonth > 0 && dayOfMonth <= daysInMonth;
-              const cellDate = new Date(currentYear, currentMonth, dayOfMonth);
+              const cellDate = new Date(currentYear, currentMonthIndex, dayOfMonth);
               
               // Check if any job falls on this date
               const hasEvent = jobs.some(job => {
