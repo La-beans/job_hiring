@@ -58,18 +58,18 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
 
     // Fetch recent applicants
     const [applicants] = await pool.query(`
-      SELECT 
-        a.id, 
-        a.name, 
-        j.title as appliedRole,
-        DATE_FORMAT(ap.created_at, '%d/%m/%y') as applicationDate,
-        ap.stage
-      FROM applications ap
-      JOIN applicants a ON ap.applicant_id = a.id
-      JOIN jobs j ON ap.job_id = j.id
-      ORDER BY ap.created_at DESC
-      LIMIT 5
-    `)
+  SELECT 
+    a.id, 
+    a.name, 
+    j.title as appliedRole,
+    DATE_FORMAT(ap.created_at, '%d/%m/%y') as applicationDate,
+    ap.stage
+  FROM applications ap
+  JOIN applicants a ON ap.applicant_id = a.id
+  JOIN jobs j ON ap.job_id = j.id
+  ORDER BY ap.created_at DESC
+  LIMIT 5
+`)
 
     // If no applicants in database, use mock data
     const displayApplicants =

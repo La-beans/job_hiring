@@ -149,7 +149,7 @@ router.post("/", isAuthenticated, isStaff, async (req, res) => {
 
     // Insert job into database
     await pool.query(
-      `INSERT INTO jobs (title, description, location, experience, icon, color_scheme, start_date, end_date, created_by) 
+      `INSERT INTO jobs (title, description, location, experience, icon, color_scheme, start_date, end_date, created_at) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [title, description, location, experience, icon, colorScheme, startDate, endDate, req.user.id],
     )

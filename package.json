@@ -9,7 +9,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup-db": "node src/scripts/setup-database.js",
     "setup-dirs": "node src/scripts/ensure-directories.js",
-    "setup": "npm run setup-dirs && npm run setup-db" 
+    "setup": "npm run setup-dirs && npm run setup-db && npm run update-db && npm run fix-db",
+    "update-db": "node src/scripts/update-database.js",
+    "fix-db": "node src/scripts/fix-database.js"
+
   },
   "keywords": [
     "node",
