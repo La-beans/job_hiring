@@ -86,9 +86,7 @@ async function setupDatabase() {
 
     // Insert predetermined staff accounts
     const staffAccounts = [
-      { name: "Admin User", email: "WRiNonChris@gmail.com", password: "Areallystrongpasswrd123!@#" },
-      { name: "HR Manager", email: "R.ocloo@lancaster.edu.gh", password: "LancasterHR" },
-      { name: "Recruiter", email: "S.Amandatawiah@lancaster.edu.gh", password: "LancasterHR" },
+
     ]
 
     for (const account of staffAccounts) {
