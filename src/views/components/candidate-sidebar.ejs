@@ -1,0 +1,55 @@
+<div id="candidateSidebar" class="candidate-sidebar">
+  <div class="candidate-sidebar-header">
+    <button id="closeSidebar" class="close-sidebar-btn">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  
+  <div class="candidate-sidebar-content">
+    <div class="candidate-profile-section">
+      <h2 class="sidebar-section-title">Candidate Details</h2>
+      <div class="candidate-profile">
+        <div class="candidate-avatar">
+          <img src="/placeholder.svg" alt="" id="candidateAvatar">
+        </div>
+        <h3 class="candidate-name" id="candidateName"></h3>
+        <p class="candidate-position" id="candidatePosition"></p>
+      </div>
+      
+      <div class="contact-details">
+        <div class="contact-item">
+          <span class="contact-label">EMAIL</span>
+          <span class="contact-value" id="candidateEmail"></span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">PHONE NUMBER</span>
+          <span class="contact-value" id="candidatePhone"></span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="application-details-section">
+      <h2 class="sidebar-section-title">Application Details</h2>
+      <div class="application-stages" id="applicationStages">
+        <!-- Stages will be populated dynamically -->
+      </div>
+    </div>
+    
+    <div class="documents-section">
+      <h2 class="sidebar-section-title">Documents</h2>
+      <div id="candidateDocuments" class="candidate-documents">
+        <!-- Documents will be populated dynamically -->
+      </div>
+    </div>
+    
+    <div class="experience-section">
+      <h2 class="sidebar-section-title">Experience</h2>
+      <div id="candidateExperience" class="candidate-experience">
+        <!-- Experience will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+

@@ -1,7 +1,48 @@
 const express = require("express")
 const router = express.Router()
-const { isAuthenticated, isStaff } = require("../middleware/auth")
+const { isAuthenticated, isStaff, isJobAccessible } = require("../middleware/auth")
 const pool = require("../config/database")
+
+// First, add these imports at the top of the file:
+const path = require("path")
+const fs = require("fs")
+const multer = require("multer")
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "../uploads")
+    // Create uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true })
+    }
+    cb(null, uploadDir)
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9)
+    const ext = path.extname(file.originalname)
+    cb(null, "resume-" + uniqueSuffix + ext)
+  },
+})
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    // Accept only certain file types
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true)
+    } else {
+      cb(new Error("Only PDF and Word documents are allowed"))
+    }
+  },
+})
 
 // Jobs dashboard (Staff view)
 router.get("/", isAuthenticated, isStaff, async (req, res) => {
@@ -18,10 +59,6 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
 
     // Process jobs for display
     const processedJobs = jobs.map((job) => {
-      // Calculate trend (mock data for now)
-      const trendNumber = Math.floor(Math.random() * 30)
-      const trendUp = Math.random() > 0.3 // 70% chance of trend being up
-
       // Map color scheme to gradient classes
       const colorMap = {
         blue: "from-cyan-400 to-blue-500",
@@ -45,8 +82,6 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
         location: job.location,
         experience: job.experience,
         applications: job.applications || 0,
-        trend: `${trendNumber} in last week`,
-        trendUp: trendUp,
         postedDays: job.posted_days || 0,
         color: colorMap[job.color_scheme] || colorMap.blue,
         borderColor: borderColorMap[job.color_scheme] || borderColorMap.blue,
@@ -69,8 +104,8 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
   }
 })
 
-// Job details page
-router.get("/:id", isAuthenticated, async (req, res) => {
+// Job details page - add the middleware
+router.get("/:id", isAuthenticated, isJobAccessible, async (req, res) => {
   try {
     const jobId = req.params.id
 
@@ -149,7 +184,7 @@ router.post("/", isAuthenticated, isStaff, async (req, res) => {
 
     // Insert job into database
     await pool.query(
-      `INSERT INTO jobs (title, description, location, experience, icon, color_scheme, start_date, end_date, created_at) 
+      `INSERT INTO jobs (title, description, location, experience, icon, color_scheme, start_date, end_date, created_by) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [title, description, location, experience, icon, colorScheme, startDate, endDate, req.user.id],
     )
@@ -242,8 +277,8 @@ router.get("/:id/delete", isAuthenticated, isStaff, async (req, res) => {
   }
 })
 
-// Apply for job form (Applicant only)
-router.get("/:id/apply", isAuthenticated, async (req, res) => {
+// Apply for job form - add the middleware
+router.get("/:id/apply", isAuthenticated, isJobAccessible, async (req, res) => {
   try {
     const jobId = req.params.id
 
@@ -274,8 +309,10 @@ router.get("/:id/apply", isAuthenticated, async (req, res) => {
   }
 })
 
-// Handle job application submission
-router.post("/:id/apply", isAuthenticated, async (req, res) => {
+// Then replace the job application submission route with this:
+
+// Handle job application submission - add the middleware
+router.post("/:id/apply", isAuthenticated, isJobAccessible, upload.single("cvFile"), async (req, res) => {
   try {
     const jobId = req.params.id
     const applicantId = req.user.id
@@ -295,11 +332,23 @@ router.post("/:id/apply", isAuthenticated, async (req, res) => {
       })
     }
 
+    // Process file upload if present
+    let cvFilename = null
+    let cvOriginalName = null
+    let cvMimeType = null
+
+    if (req.file) {
+      cvFilename = req.file.filename
+      cvOriginalName = req.file.originalname
+      cvMimeType = req.file.mimetype
+    }
+
     // Insert application into database
     await pool.query(
       `INSERT INTO applications (job_id, applicant_id, first_name, last_name, email, phone, 
-        alternate_phone, street, city, postal_code, previously_worked, stage) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        alternate_phone, street, city, postal_code, previously_worked, stage, 
+        cv_filename, cv_original_name, cv_mime_type) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         jobId,
         applicantId,
@@ -313,6 +362,9 @@ router.post("/:id/apply", isAuthenticated, async (req, res) => {
         postalCode,
         previouslyWorked === "yes",
         "New",
+        cvFilename,
+        cvOriginalName,
+        cvMimeType,
       ],
     )
 

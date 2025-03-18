@@ -25,7 +25,6 @@
         <div class="job-metrics">
           <div>
             <div class="job-applications"><%= job.applications %> applicants</div>
-            <div class="job-trend <%= job.trendUp ? 'trend-up' : 'trend-down' %>"><%= job.trend %></div>
           </div>
           <div class="job-color-box <%= job.color.replace('from-', '').replace('to-', '') %>"></div>
         </div>
@@ -81,6 +80,8 @@
     </table>
   </div>
 </section>
+
+<%- include('../components/candidate-sidebar') %>
 
 <script>
 function editJob(jobId) {

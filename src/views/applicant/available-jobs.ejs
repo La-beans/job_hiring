@@ -1,0 +1,49 @@
+<div class="available-jobs-container">
+    <h1 class="page-title">Available Job Openings</h1>
+  
+    <% if (jobs.length > 0) { %>
+      <div class="job-cards">
+        <% jobs.forEach(function(job) { %>
+          <a href="/jobs/<%= job.id %>" class="job-card">
+            <div class="job-card-header">
+              <div class="job-icon-title">
+                <span class="job-icon"><%= job.icon %></span>
+                <div>
+                  <h3 class="job-title"><%= job.title %></h3>
+                  <p class="job-location"><%= job.location %></p>
+                </div>
+              </div>
+            </div>
+            <div class="job-experience"><%= job.experience %></div>
+            <div class="job-dates">
+              <span>Available: <%= new Date(job.startDate).toLocaleDateString() %> - <%= new Date(job.endDate).toLocaleDateString() %></span>
+            </div>
+            <div class="job-posted">Posted <%= job.postedDays %> days ago</div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="no-jobs-message">
+        <p>There are currently no available job openings.</p>
+        <p>Please check back later for new opportunities.</p>
+      </div>
+    <% } %>
+  </div>
+  
+  <style>
+    .no-jobs-message {
+      text-align: center;
+      padding: 48px 24px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .job-dates {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 8px 0;
+    }
+  </style>
+  
+  

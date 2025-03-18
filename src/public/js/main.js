@@ -38,5 +38,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
   })
+
+  // Make candidate rows clickable
+  document.querySelectorAll(".candidate-row").forEach((row) => {
+    row.addEventListener("click", (e) => {
+      // Don't trigger if clicking on a button or link
+      if (
+        e.target.tagName === "A" ||
+        e.target.tagName === "BUTTON" ||
+        e.target.closest("a") ||
+        e.target.closest("button")
+      ) {
+        return
+      }
+
+      const viewLink = row.querySelector('a[href^="/candidates/"]')
+      if (viewLink) {
+        window.location.href = viewLink.getAttribute("href")
+      }
+    })
+  })
 })
 

@@ -1,16 +1,16 @@
 <div class="calendar-container">
   <h1 class="page-title">Job Calendar</h1>
-
+  
   <div class="calendar-layout">
     <div class="calendar-sidebar">
       <div class="month-calendar">
         <div class="month-header">
           <span><%= currentMonth %></span>
           <div class="month-nav">
-            <button class="icon-button">
+            <button class="icon-button" onclick="navigateMonth('mini', -1)">
               <i class="fas fa-chevron-left"></i>
             </button>
-            <button class="icon-button">
+            <button class="icon-button" onclick="navigateMonth('mini', 1)">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
@@ -29,21 +29,11 @@
           
           <div class="days">
             <% 
-              // Generate mini calendar
-              const today = new Date();
-              const currentYear = today.getFullYear();
-              const currentMonthIndex = today.getMonth();
-              const firstDay = new Date(currentYear, currentMonthIndex, 1);
-              const lastDay = new Date(currentYear, currentMonthIndex + 1, 0);
-              const daysInMonth = lastDay.getDate();
-              
-              // Calculate the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
-              let firstDayOfWeek = firstDay.getDay();
-              // Adjust for Monday as first day of week
-              firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+              const today = new Date(currentDate);
+              const { firstDayOfWeek, daysInMonth } = monthDetails;
               
               // Previous month days
-              const prevMonth = new Date(currentYear, currentMonthIndex, 0);
+              const prevMonth = new Date(monthDetails.year, monthDetails.month, 0);
               const daysInPrevMonth = prevMonth.getDate();
               
               for (let i = daysInPrevMonth - firstDayOfWeek + 1; i <= daysInPrevMonth; i++) {
@@ -53,7 +43,9 @@
             
             <!-- Current month days -->
             <% for (let i = 1; i <= daysInMonth; i++) { 
-              const isToday = i === today.getDate();
+              const isToday = i === today.getDate() && 
+                             monthDetails.month === today.getMonth() && 
+                             monthDetails.year === today.getFullYear();
             %>
               <button class="day <%= isToday ? 'current' : '' %>"><%= i %></button>
             <% } %>
@@ -88,10 +80,10 @@
       <div class="calendar-header">
         <h2><%= currentMonth %></h2>
         <div class="calendar-nav">
-          <button class="icon-button">
+          <button class="icon-button" onclick="navigateMonth('main', -1)">
             <i class="fas fa-chevron-left"></i>
           </button>
-          <button class="icon-button">
+          <button class="icon-button" onclick="navigateMonth('main', 1)">
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
@@ -110,45 +102,42 @@
         
         <div class="calendar-days">
           <% 
+            // Helper function to format date
+            function formatDate(date) {
+              return date.toISOString().split('T')[0];
+            }
+
             // Generate calendar days for the current month
-            
-            // Calculate total cells needed (previous month days + current month days + next month days)
-            const totalCells1 = Math.ceil((firstDayOfWeek + daysInMonth) / 7) * 7;
+            const totalDays = firstDayOfWeek + daysInMonth;
+            const totalWeeks = Math.ceil(totalDays / 7);
             
             // Generate calendar cells
-            for (let i = 0; i < totalCells1; i++) {
+            for (let i = 0; i < totalWeeks * 7; i++) {
               const dayOfMonth = i - firstDayOfWeek + 1;
               const isCurrentMonth = dayOfMonth > 0 && dayOfMonth <= daysInMonth;
-              const cellDate = new Date(currentYear, currentMonthIndex, dayOfMonth);
+              const currentDate = new Date(monthDetails.year, monthDetails.month, dayOfMonth);
               
               // Check if any job falls on this date
-              const hasEvent = jobs.some(job => {
+              const jobsOnDate = isCurrentMonth ? jobs.filter(job => {
                 const startDate = new Date(job.startDate);
                 const endDate = new Date(job.endDate);
-                return cellDate >= startDate && cellDate <= endDate;
-              });
+                return currentDate >= startDate && currentDate <= endDate;
+              }) : [];
               
+              const hasEvent = jobsOnDate.length > 0;
               const cellClass = isCurrentMonth 
                 ? (hasEvent ? 'has-event' : '') 
                 : 'other-month';
           %>
-            <div class="calendar-day <%= cellClass %>">
+            <div class="calendar-day <%= cellClass %>" data-date="<%= isCurrentMonth ? formatDate(currentDate) : '' %>">
               <span class="day-number"><%= isCurrentMonth ? dayOfMonth : '' %></span>
               <% if (hasEvent) { %>
-                <div class="event-marker">
-                  <% 
-                    // Find jobs for this date
-                    const jobsOnDate = jobs.filter(job => {
-                      const startDate = new Date(job.startDate);
-                      const endDate = new Date(job.endDate);
-                      return cellDate >= startDate && cellDate <= endDate;
-                    });
-                    
-                    // Display first job's icon
-                    if (jobsOnDate.length > 0) { 
-                  %>
-                    <%= jobsOnDate[0].icon %>
-                  <% } %>
+                <div class="event-markers">
+                  <% jobsOnDate.forEach(job => { %>
+                    <div class="event-marker <%= job.colorScheme %>-bg" title="<%= job.title %>">
+                      <%= job.icon %>
+                    </div>
+                  <% }); %>
                 </div>
               <% } %>
             </div>
@@ -157,5 +146,28 @@
       </div>
     </div>
   </div>
+  
+  <script>
+  function navigateMonth(calendar, direction) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let year = parseInt(urlParams.get('year')) || new Date().getFullYear();
+    let month = parseInt(urlParams.get('month')) || new Date().getMonth();
+    
+    // Calculate new month and year
+    month += direction;
+    if (month < 0) {
+      month = 11;
+      year--;
+    } else if (month > 11) {
+      month = 0;
+      year++;
+    }
+    
+    // Update URL and reload page
+    urlParams.set('year', year);
+    urlParams.set('month', month);
+    window.location.search = urlParams.toString();
+  }
+  </script>
 </div>
 

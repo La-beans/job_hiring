@@ -1,0 +1,172 @@
+<div class="documents-container">
+    <h1 class="page-title">Candidate Documents</h1>
+  
+    <% if (jobsWithDocuments.length === 0) { %>
+      <div class="no-documents">
+        <p>No documents have been uploaded by candidates yet.</p>
+      </div>
+    <% } else { %>
+      <% jobsWithDocuments.forEach(function(job) { %>
+        <div class="document-section">
+          <div class="document-section-header">
+            <div class="job-icon-container <%= job.colorClass %>">
+              <span class="job-icon"><%= job.icon %></span>
+            </div>
+            <h2 class="document-section-title"><%= job.title %></h2>
+          </div>
+  
+          <div class="document-list">
+            <% if (job.candidates.length === 0) { %>
+              <p class="no-documents-job">No documents available for this job.</p>
+            <% } else { %>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>CANDIDATE NAME</th>
+                    <th>DOCUMENT</th>
+                    <th>UPLOADED ON</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% job.candidates.forEach(function(candidate) { %>
+                    <tr>
+                      <td>
+                        <div class="candidate-name">
+                          <div class="avatar">
+                            <img src="/images/avatar.png" alt="<%= candidate.applicant_name %>">
+                          </div>
+                          <a href="/candidates/<%= candidate.applicant_id %>"><%= candidate.applicant_name %></a>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="document-name">
+                          <i class="fas fa-file-pdf document-icon"></i>
+                          <span><%= candidate.cv_original_name || 'Resume.pdf' %></span>
+                        </div>
+                      </td>
+                      <td><%= new Date(candidate.application_date).toLocaleDateString() %></td>
+                      <td>
+                        <div class="document-actions">
+                          <a href="/documents/<%= candidate.application_id %>/download" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download"></i> Download
+                          </a>
+                          
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  
+    <div class="upload-test-section mt-4">
+      <h2>Upload Document (For Testing)</h2>
+      <form action="/documents/upload" method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="mb-3">
+          <label for="applicationId" class="form-label">Application ID</label>
+          <input type="number" id="applicationId" name="applicationId" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="document" class="form-label">Document (PDF or Word)</label>
+          <input type="file" id="document" name="document" class="form-control" accept=".pdf,.doc,.docx" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload Document</button>
+      </form>
+    </div>
+  </div>
+  
+  <style>
+    .documents-container {
+      padding: 16px;
+    }
+  
+    .document-section {
+      margin-bottom: 32px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--card-bg);
+    }
+  
+    .document-section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  
+    .dark-theme .document-section-header {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  
+    .job-icon-container {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+  
+    .document-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+  
+    .document-list {
+      padding: 16px;
+    }
+  
+    .no-documents, .no-documents-job {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-muted);
+    }
+  
+    .no-documents-job {
+      padding: 16px;
+    }
+  
+    .document-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  
+    .document-icon {
+      color: #e74c3c;
+      font-size: 16px;
+    }
+  
+    .document-actions {
+      display: flex;
+      gap: 8px;
+    }
+  
+    .table {
+      margin-bottom: 0;
+    }
+  
+    /* Add this to your existing styles */
+    .upload-test-section {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      background-color: var(--card-bg);
+    }
+    
+    .upload-form {
+      max-width: 500px;
+    }
+  </style>
+  
+  

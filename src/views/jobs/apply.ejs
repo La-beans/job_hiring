@@ -9,7 +9,7 @@
     <h1 class="application-title">Apply for <%= job.title %></h1>
     <p class="application-subtitle">Please fill out the form below to apply for this position.</p>
     
-    <form action="/jobs/<%= job.id %>/apply" method="POST" class="application-form">
+    <form action="/jobs/<%= job.id %>/apply" method="POST" class="application-form" enctype="multipart/form-data">
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="firstName" class="form-label">First Name</label>
@@ -77,7 +77,7 @@
       </div>
       
       <div class="mb-3">
-        <label class="form-label">Upload your CV</label>
+        <label class="form-label">Upload your CV (PDF or Word document)</label>
         <div class="cv-upload-area" id="dropZone">
           <p class="text-center">Drag and drop your CV here</p>
           <p class="text-center text-muted">or</p>
@@ -87,6 +87,9 @@
           </div>
         </div>
         <div id="selectedFile" class="selected-file-info"></div>
+        <div class="file-requirements text-muted mt-2">
+          <small>Accepted formats: PDF, DOC, DOCX. Maximum size: 10MB</small>
+        </div>
       </div>
       
       <button type="submit" class="btn btn-success w-100">Submit Application</button>

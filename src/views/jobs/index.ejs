@@ -33,7 +33,6 @@
         <div class="job-metrics">
           <div>
             <div class="job-applications"><%= job.applications %></div>
-            <div class="job-trend <%= job.trendUp ? 'trend-up' : 'trend-down' %>"><%= job.trend %></div>
           </div>
           <div class="job-color-box <%= job.color.replace('from-', '').replace('to-', '') %>"></div>
         </div>
@@ -70,10 +69,10 @@
               <select class="form-select bg-dark text-light border-secondary" name="location" required>
                 <option value="" disabled selected>Job Location</option>
                 <option value="Remote">Remote</option>
-                <option value="Accra">Accra</option>
-                <option value="Kumasi">Kumai</option>
-                <option value="Achimota">Achimota</option>
-                <option value="local">local</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Hyderabad">Hyderabad</option>
               </select>
             </div>
             <div class="col">

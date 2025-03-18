@@ -12,7 +12,6 @@
     "setup": "npm run setup-dirs && npm run setup-db && npm run update-db && npm run fix-db",
     "update-db": "node src/scripts/update-database.js",
     "fix-db": "node src/scripts/fix-database.js"
-
   },
   "keywords": [
     "node",
@@ -31,6 +30,7 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.13.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"

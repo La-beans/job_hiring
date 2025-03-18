@@ -1,127 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> | LUG Job Ads</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title %> | LUG Job Ads</title>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/css/styles.css">
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Add this line in the head section -->
+<link rel="stylesheet" href="/css/search-dropdown.css">
+<!-- Add this line in the head section -->
+<link rel="stylesheet" href="/css/candidate-sidebar.css">
 </head>
 <body class="dark-theme">
-  <div class="app-container">
-    <% if (typeof user !== 'undefined' && user) { %>
-      <!-- Header -->
-      <header class="app-header">
-        <div class="header-left">
-          <div class="brand">
-            <span class="brand-icon">✷</span>
-            <span class="brand-text">LUG Job Ads</span>
-          </div>
-          <div class="search-container">
+<div class="app-container">
+  <% if (typeof user !== 'undefined' && user) { %>
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand">
+          <span class="brand-icon">✷</span>
+          <span class="brand-text">LUG Job Ads</span>
+        </div>
+        <div class="search-container">
+          <form action="/search" method="GET" class="search-form">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Search for jobs, candidates and more...">
-          </div>
+            <input type="text" name="q" class="search-input" placeholder="Search for jobs, candidates and more..." value="<%= typeof query !== 'undefined' ? query : '' %>">
+          </form>
         </div>
-        <div class="header-right">
-          <button class="icon-button" title="Settings" id="toggleDarkMode">
-            <i class="fas fa-cog"></i>
-          </button>
-          <button class="icon-button" title="Notifications">
-            <i class="fas fa-bell"></i>
-          </button>
-          <div class="avatar">
-            <img src="<%= user.avatar || '/images/avatar.png' %>" alt="<%= user.name %>">
-          </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-button" title="Settings" id="toggleDarkMode">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button class="icon-button" title="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <div class="avatar">
+          <img src="<%= user.avatar || '/images/avatar.png' %>" alt="<%= user.name %>">
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- Sidebar -->
-      <aside class="app-sidebar">
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <a href="<%= user.role === 'staff' ? '/dashboard' : '/applicant/dashboard' %>" class="nav-item <%= title === 'Staff Dashboard' || title === 'Applicant Dashboard' ? 'active' : '' %>">
-              <i class="fas fa-home"></i>
-              <span>Dashboard</span>
-            </a>
-            <a href="<%= user.role === 'staff' ? '/dashboard/messages' : '/applicant/messages' %>" class="nav-item">
-              <i class="fas fa-comment-alt"></i>
-              <span>Messages</span>
-              <span class="badge">10</span>
-            </a>
-            <a href="<%= user.role === 'staff' ? '/calendar' : '/calendar/applicant' %>" class="nav-item <%= title === 'Job Calendar' ? 'active' : '' %>">
-              <i class="fas fa-calendar-alt"></i>
-              <span>Calendar</span>
-              <% if (user.role === 'staff') { %>
-                <span class="nav-note">Manage</span>
-              <% } else { %>
-                <span class="nav-note">Job Ads</span>
-              <% } %>
-            </a>
-          </div>
-          
-          <div class="nav-section">
-            <div class="nav-section-title">RECRUITMENT</div>
-            <a href="<%= user.role === 'staff' ? '/jobs' : '/applicant/dashboard' %>" class="nav-item <%= title.includes('Jobs') || title === 'Applicant Dashboard' ? 'active' : '' %>">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <a href="<%= user.role === 'staff' ? '/dashboard' : '/applicant/dashboard' %>" class="nav-item <%= title === 'Staff Dashboard' || title === 'Applicant Dashboard' ? 'active' : '' %>">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="<%= user.role === 'staff' ? '/dashboard/messages' : '/applicant/messages' %>" class="nav-item">
+            <i class="fas fa-comment-alt"></i>
+            <span>Messages</span>
+            <span class="badge">10</span>
+          </a>
+          <a href="<%= user.role === 'staff' ? '/calendar' : '/calendar/applicant' %>" class="nav-item <%= title === 'Job Calendar' ? 'active' : '' %>">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Calendar</span>
+            <% if (user.role === 'staff') { %>
+              <span class="nav-note">Manage</span>
+            <% } else { %>
+              <span class="nav-note">Job Ads</span>
+            <% } %>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <div class="nav-section-title">RECRUITMENT</div>
+          <% if (user.role === 'staff') { %>
+            <a href="/jobs" class="nav-item <%= title.includes('Jobs') ? 'active' : '' %>">
               <i class="fas fa-briefcase"></i>
               <span>Jobs</span>
             </a>
-            <% if (user.role === 'staff') { %>
-              <a href="/candidates" class="nav-item <%= title === 'Candidates' ? 'active' : '' %>">
-                <i class="fas fa-users"></i>
-                <span>Candidates</span>
-              </a>
-            <% } else { %>
-              <a href="/applicant/applications" class="nav-item <%= title === 'My Applications' ? 'active' : '' %>">
-                <i class="fas fa-file-alt"></i>
-                <span>My Applications</span>
-              </a>
-              <a href="/applicant/profile" class="nav-item <%= title === 'My Profile' ? 'active' : '' %>">
-                <i class="fas fa-user"></i>
-                <span>My Profile</span>
-              </a>
-            <% } %>
-          </div>
-          
-          <% if (user.role === 'staff') { %>
-            <div class="nav-section">
-              <div class="nav-section-title">ORGANIZATION</div>
-              <a href="/dashboard/documents" class="nav-item">
-                <i class="fas fa-folder"></i>
-                <span>Documents</span>
-              </a>
-              <a href="/dashboard/reports" class="nav-item">
-                <i class="fas fa-chart-bar"></i>
-                <span>Reports</span>
-              </a>
-            </div>
+          <% } else { %>
+            <a href="/applicant/available-jobs" class="nav-item <%= title === 'Available Jobs' ? 'active' : '' %>">
+              <i class="fas fa-briefcase"></i>
+              <span>Available Jobs</span>
+            </a>
           <% } %>
-          
-          <div class="nav-section mt-auto">
-            <a href="/auth/logout" class="nav-item">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
+          <% if (user.role === 'staff') { %>
+            <a href="/candidates" class="nav-item <%= title === 'Candidates' ? 'active' : '' %>">
+              <i class="fas fa-users"></i>
+              <span>Candidates</span>
+            </a>
+          <% } else { %>
+            <a href="/applicant/applications" class="nav-item <%= title === 'My Applications' ? 'active' : '' %>">
+              <i class="fas fa-file-alt"></i>
+              <span>My Applications</span>
+            </a>
+            <a href="/applicant/profile" class="nav-item <%= title === 'My Profile' ? 'active' : '' %>">
+              <i class="fas fa-user"></i>
+              <span>My Profile</span>
+            </a>
+          <% } %>
+        </div>
+        
+        <% if (user.role === 'staff') { %>
+          <div class="nav-section">
+            <div class="nav-section-title">ORGANIZATION</div>
+            <a href="/documents" class="nav-item <%= title === 'Documents' ? 'active' : '' %>">
+              <i class="fas fa-folder"></i>
+              <span>Documents</span>
+            </a>
+            <a href="/dashboard/reports" class="nav-item">
+              <i class="fas fa-chart-bar"></i>
+              <span>Reports</span>
             </a>
           </div>
-        </nav>
-      </aside>
+        <% } %>
+        
+        <div class="nav-section mt-auto">
+          <a href="/auth/logout" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
 
-      <!-- Main content -->
-      <main class="app-main">
-        <%- body %>
-      </main>
-    <% } else { %>
+    <!-- Main content -->
+    <main class="app-main">
       <%- body %>
-    <% } %>
-  </div>
+    </main>
+  <% } else { %>
+    <%- body %>
+  <% } %>
+</div>
 
-  <!-- Bootstrap JS Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Custom JS -->
-  <script src="/js/main.js"></script>
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="/js/main.js"></script>
+<!-- Add this before the closing </body> tag -->
+<script src="/js/search.js"></script>
+<!-- Add this before the closing </body> tag -->
+<script src="/js/candidate-sidebar.js"></script>
 </body>
 </html>
 

@@ -1,0 +1,103 @@
+<div class="search-results-container">
+    <h1 class="page-title">Search Results for "<%= query %>"</h1>
+  
+    <% if (results.jobs.length === 0 && results.candidates.length === 0) { %>
+      <div class="no-results">
+        <p>No results found for "<%= query %>". Please try a different search term.</p>
+      </div>
+    <% } %>
+  
+    <% if (results.jobs.length > 0) { %>
+      <section class="search-section">
+        <h2 class="section-title">Jobs</h2>
+        <div class="job-cards">
+          <% results.jobs.forEach(function(job) { %>
+            <a href="/jobs/<%= job.id %>" class="job-card">
+              <div class="job-card-header">
+                <div class="job-icon-title">
+                  <span class="job-icon"><%= job.icon %></span>
+                  <div>
+                    <h3 class="job-title"><%= job.title %></h3>
+                    <p class="job-location"><%= job.location %></p>
+                  </div>
+                </div>
+              </div>
+              <div class="job-experience"><%= job.experience %></div>
+              <div class="job-dates">
+                <span>Available: <%= job.startDate %> - <%= job.endDate %></span>
+              </div>
+              <div class="job-posted">Posted <%= job.postedDays %> days ago</div>
+            </a>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+  
+    <% if (user.role === 'staff' && results.candidates.length > 0) { %>
+      <section class="search-section">
+        <h2 class="section-title">Candidates</h2>
+        <div class="candidates-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>APPLICANT NAME</th>
+                <th>APPLIED ROLE</th>
+                <th>APPLICATION DATE</th>
+                <th>STAGE</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% results.candidates.forEach(function(candidate) { %>
+                <tr class="candidate-row">
+                  <td>
+                    <div class="candidate-name">
+                      <div class="avatar">
+                        <img src="<%= candidate.avatar %>" alt="<%= candidate.name %>">
+                      </div>
+                      <span><%= candidate.name %></span>
+                    </div>
+                  </td>
+                  <td><a href="/jobs/<%= candidate.jobId %>"><%= candidate.jobTitle %></a></td>
+                  <td><%= candidate.applicationDate %></td>
+                  <td><%= candidate.stage %></td>
+                  <td>
+                    <a href="/candidates/<%= candidate.applicationId %>" class="btn btn-sm btn-outline-primary">View</a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    <% } %>
+  </div>
+  
+  <style>
+    .search-results-container {
+      padding: 16px;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 32px;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+    
+    .search-section {
+      margin-bottom: 32px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+  </style>
+  
+  

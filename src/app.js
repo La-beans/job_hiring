@@ -125,6 +125,9 @@ const jobsRouter = require("./routes/jobs")
 const candidatesRouter = require("./routes/candidates")
 const calendarRouter = require("./routes/calendar")
 const applicantRouter = require("./routes/applicant")
+const documentsRouter = require("./routes/documents")
+const searchRouter = require("./routes/search")
+
 
 app.use("/", indexRouter)
 app.use("/auth", authRouter)
@@ -133,6 +136,8 @@ app.use("/jobs", jobsRouter)
 app.use("/candidates", candidatesRouter)
 app.use("/calendar", calendarRouter)
 app.use("/applicant", applicantRouter)
+app.use("/documents", documentsRouter) 
+app.use("/search", searchRouter)
 
 // Error handler
 app.use((err, req, res, next) => {

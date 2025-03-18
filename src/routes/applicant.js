@@ -6,16 +6,17 @@ const pool = require("../config/database")
 // Applicant dashboard
 router.get("/dashboard", isAuthenticated, isApplicant, async (req, res) => {
   try {
-    // Fetch available jobs
+    // Fetch available jobs - only show jobs where start_date has been reached
     const [jobs] = await pool.query(`
-      SELECT 
-        j.*, 
-        (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) as applications,
-        DATEDIFF(CURRENT_DATE(), j.created_at) as posted_days
-      FROM jobs j
-      WHERE j.end_date >= CURRENT_DATE()
-      ORDER BY j.created_at DESC
-    `)
+    SELECT 
+      j.*, 
+      (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) as applications,
+      DATEDIFF(CURRENT_DATE(), j.created_at) as posted_days
+    FROM jobs j
+    WHERE j.end_date >= CURRENT_DATE()
+    AND j.start_date <= CURRENT_DATE()  /* Only show jobs where start date has been reached */
+    ORDER BY j.created_at DESC
+  `)
 
     // Process jobs for display
     const processedJobs = jobs.map((job) => {
@@ -59,16 +60,16 @@ router.get("/dashboard", isAuthenticated, isApplicant, async (req, res) => {
     // Fetch applicant's applications
     const [applications] = await pool.query(
       `
-      SELECT 
-        a.*,
-        j.title as job_title,
-        j.location as job_location,
-        j.icon as job_icon
-      FROM applications a
-      JOIN jobs j ON a.job_id = j.id
-      WHERE a.applicant_id = ?
-      ORDER BY a.created_at DESC
-    `,
+    SELECT 
+      a.*,
+      j.title as job_title,
+      j.location as job_location,
+      j.icon as job_icon
+    FROM applications a
+    JOIN jobs j ON a.job_id = j.id
+    WHERE a.applicant_id = ?
+    ORDER BY a.created_at DESC
+  `,
       [req.user.id],
     )
 
@@ -158,6 +159,64 @@ router.get("/applications", isAuthenticated, isApplicant, async (req, res) => {
     })
   }
 })
+
+// Add this route to get all available jobs for applicants
+router.get("/available-jobs", isAuthenticated, isApplicant, async (req, res) => {
+  try {
+    // Fetch available jobs - only show jobs where start_date has been reached
+    const [jobs] = await pool.query(`
+      SELECT 
+        j.*, 
+        (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) as applications,
+        DATEDIFF(CURRENT_DATE(), j.created_at) as posted_days
+      FROM jobs j
+      WHERE j.end_date >= CURRENT_DATE()
+      AND j.start_date <= CURRENT_DATE()  /* Only show jobs where start date has been reached */
+      ORDER BY j.created_at DESC
+    `)
+
+    // Process jobs for display
+    const processedJobs = jobs.map((job) => {
+      // Map color scheme to gradient classes
+      const colorMap = {
+        blue: "from-cyan-400 to-blue-500",
+        red: "from-red-400 to-pink-500",
+        yellow: "from-yellow-400 to-orange-500",
+        green: "from-emerald-400 to-teal-500",
+      }
+
+      return {
+        id: job.id,
+        title: job.title,
+        icon: job.icon || "💼",
+        location: job.location,
+        experience: job.experience,
+        postedDays: job.posted_days || 0,
+        color: colorMap[job.color_scheme] || colorMap.blue,
+        startDate: formatDate(job.start_date),
+        endDate: formatDate(job.end_date),
+      }
+    })
+
+    res.render("applicant/available-jobs", {
+      title: "Available Jobs",
+      jobs: processedJobs,
+    })
+  } catch (error) {
+    console.error("Error loading available jobs:", error)
+    res.status(500).render("error", {
+      title: "Error",
+      message: "Error loading available jobs",
+      error: process.env.NODE_ENV === "development" ? error : {},
+    })
+  }
+})
+
+// Helper function to format date
+function formatDate(date) {
+  const d = new Date(date)
+  return d.toISOString().split("T")[0]
+}
 
 module.exports = router
 

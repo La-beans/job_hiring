@@ -19,10 +19,6 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
 
     // Process jobs for display
     const processedJobs = jobs.map((job) => {
-      // Calculate trend (mock data for now)
-      const trendNumber = Math.floor(Math.random() * 30)
-      const trendUp = Math.random() > 0.3 // 70% chance of trend being up
-
       // Map color scheme to gradient classes
       const colorMap = {
         blue: "from-cyan-400 to-blue-500",
@@ -46,8 +42,6 @@ router.get("/", isAuthenticated, isStaff, async (req, res) => {
         location: job.location,
         experience: job.experience,
         applications: job.applications || 0,
-        trend: `${trendNumber} in last week`,
-        trendUp: trendUp,
         postedDays: job.posted_days || 0,
         color: colorMap[job.color_scheme] || colorMap.blue,
         borderColor: borderColorMap[job.color_scheme] || borderColorMap.blue,
